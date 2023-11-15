@@ -159,7 +159,7 @@ class CharacterCard:
 
 
 class TextGenThread(QThread):
-    final_resultReady = Signal(list)
+    final_resultReady = Signal(bool, list)
     resultReady = Signal(str)
 
     def __init__(self, params: dict, backend: str):
@@ -177,7 +177,7 @@ class TextGenThread(QThread):
                 self._exllamav2_generate()
         except Exception as error:
             print(f"--- Error: Failed to generate:\n{error}")
-            self.final_resultReady.emit([False])
+            self.final_resultReady.emit(False, None)
 
     def _generate(self):
         if self.stream_enabled:
@@ -193,12 +193,12 @@ class TextGenThread(QThread):
             # Append the response to the final text and emit the result ready signal
             final_text += response["content"]
             self.resultReady.emit(response["content"])
-        self._emit_final_result(final_text, response)
+        self._emit_final_result(final_text, response=None)
 
     def _generate_nostream(self):
         # Get generated text without streaming
         response = cpp_server_gen.generate_nostream(self.params)
-        self._emit_final_result(response["content"], response)
+        self._emit_final_result(response["content"], response=None)
 
     def _exllamav2_generate(self):
         if self.stream_enabled:
@@ -217,17 +217,17 @@ class TextGenThread(QThread):
             return final_text, response
 
         final_text, response = asyncio.run(get_response())
-        self._emit_final_result(final_text, response)
+        self._emit_final_result(final_text, response=None)
 
     def _exllamav2_generate_nostream(self):
         # Get generated text without streaming
         response = exllamav2_server_gen.launch(self.params)
         final_text = response["response"]
-        self._emit_final_result(final_text, response)
+        self._emit_final_result(final_text, response=None)
 
     def _emit_final_result(self, final_text: str, response):
         final_result = [final_text.strip(), response]
-        self.final_resultReady.emit(final_result)
+        self.final_resultReady.emit(True, final_result)
 
     def stop(self):
         self.stop_flag = True
@@ -393,6 +393,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                         self.outputText.setMarkdown(
                             self.final_prompt_template["display_text"]
                         )
+                self.setWindowTitle(f"AI Messsenger - {self.bot_name}")
 
         elif toolbox_index == 1:
             self.page_mode = "Simple"
@@ -853,14 +854,13 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         cursor.insertMarkdown(text)
         self.scroll_to_bottom()
 
-    def handle_final_result(self, final_result):
-        if not final_result[0]:
+    def handle_final_result(self, success, final_result):
+        if not success:
             # If only FALSE is returned from failure
             self.status_bar_msg("Error: Generation failed...")
-            return
+            print('fail')
         else:
             self.update_generation_status(False, final_result[1])
-
             final_text = final_result[0]
 
             if self.page_mode == "Chat":
@@ -869,8 +869,8 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 not self.stream and not self.session_dict[self.bot_name]["user_msgs"]
             ):  # If not chat and stream disabled
                 self.display_text_nonstream(final_text)
+            # print("---" + self.session_dict[self.bot_name]["context"] + "---")
 
-        # print("---" + self.session_dict[self.bot_name]["context"] + "---")
         self.button_manager(False)
         self.textgenThread = None
         app.alert(self.centralwidget)

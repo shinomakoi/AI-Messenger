@@ -12,47 +12,36 @@ def create_payload(cpp_params, stream=False):
         "stream": stream,
     }
 
+
 def send_request(payload) -> Union[str, None]:
-    try:
-        response = requests.post(URL, json=payload)
-        if (
-            not response.ok
-        ):  # If status code is not successful (200), raise an exception
-            print("Failed to generate response", response.text)
-            return None
+    result = None
+    response = requests.post(URL, json=payload)
+    if not response.ok:  # If status code is not successful (200), raise an exception
+        print("Failed to generate response", response.text)
+        return None
 
-        result = response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error during request: {e}")
-        result = ""  # Return an empty string if there was a problem with the request
-
+    result = response.json()
     return result
+
 
 def generate_nostream(cpp_params):
     payload = create_payload(cpp_params)
     return send_request(payload)
+
 
 def generate_with_streaming(cpp_params):
     payload = create_payload(
         cpp_params, stream=True
     )  # Set the 'stream' parameter to True
 
-    try:
-        response = requests.post(URL, stream=True, json=payload)
+    response = requests.post(URL, stream=True, json=payload)
 
-        if (
-            not response.ok
-        ):  # If status code is not successful (200), raise an exception
-            print("Failed to generate response", response.text)
+    if not response.ok:  # If status code is not successful (200), raise an exception
+        print("Failed to generate response", response.text)
 
-        for line in response.iter_lines():
-            decoded = line.decode("utf8")
-            if decoded.startswith(
-                DATA_PREFIX
-            ):  # If the line starts with 'data: ', it's a JSON object
-                yield json.loads(decoded[len(DATA_PREFIX) :])
-
-    except requests.exceptions.RequestException as e:
-        print(
-            "Error during request", str(e)
-        )  # Print the error message if there was an exception
+    for line in response.iter_lines():
+        decoded = line.decode("utf8")
+        if decoded.startswith(
+            DATA_PREFIX
+        ):  # If the line starts with 'data: ', it's a JSON object
+            yield json.loads(decoded[len(DATA_PREFIX) :])
