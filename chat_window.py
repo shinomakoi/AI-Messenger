@@ -698,7 +698,7 @@ class Ui_ChatWindow(object):
         self.keepLastNSpin.valueChanged.connect(self.keepLastNSlider.setValue)
 
         self.leftToolbox.setCurrentIndex(0)
-        self.rightToolbox.setCurrentIndex(0)
+        self.rightToolbox.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(ChatWindow)
@@ -870,10 +870,12 @@ class Ui_ChatWindow(object):
         self.botnameLine.setToolTip(QCoreApplication.translate("ChatWindow", u"Display name of bot", None))
 #endif // QT_CONFIG(tooltip)
         self.botnameLine.setText(QCoreApplication.translate("ChatWindow", u"Bot", None))
+        self.botnameLine.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"Bot", None))
 #if QT_CONFIG(tooltip)
         self.usernameLine.setToolTip(QCoreApplication.translate("ChatWindow", u"Display name of user", None))
 #endif // QT_CONFIG(tooltip)
         self.usernameLine.setText(QCoreApplication.translate("ChatWindow", u"You", None))
+        self.usernameLine.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"You", None))
 #if QT_CONFIG(tooltip)
         self.customSysPromptText.setToolTip(QCoreApplication.translate("ChatWindow", u"Custom system prompt text", None))
 #endif // QT_CONFIG(tooltip)

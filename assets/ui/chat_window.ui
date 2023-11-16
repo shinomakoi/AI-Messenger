@@ -305,7 +305,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="paramsBasicPage">
         <property name="geometry">
@@ -994,6 +994,9 @@
            <property name="text">
             <string>Bot</string>
            </property>
+           <property name="placeholderText">
+            <string>Bot</string>
+           </property>
           </widget>
          </item>
          <item row="4" column="0">
@@ -1002,6 +1005,9 @@
             <string>Display name of user</string>
            </property>
            <property name="text">
+            <string>You</string>
+           </property>
+           <property name="placeholderText">
             <string>You</string>
            </property>
           </widget>

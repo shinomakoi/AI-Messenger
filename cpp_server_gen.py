@@ -2,7 +2,7 @@ import json
 import requests
 from typing import Union
 
-URL = "http://127.0.0.1:8080/completion"
+URL = "http://localhost:8080/completion"
 DATA_PREFIX = "data: "
 
 
