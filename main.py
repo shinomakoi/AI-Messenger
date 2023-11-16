@@ -280,7 +280,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         # Connect comboboxes to their respective functions
         self.inputHistoryCombo.activated.connect(self.set_chat_input_history)
         self.paramPresets_comboBox.activated.connect(self.apply_params_preset)
-        self.contactsTree.itemDoubleClicked.connect(self.manage_page_mode)
+        self.contactsTree.itemDoubleClicked.connect(self.manage_contacts)
         self.leftToolbox.currentChanged.connect(self.manage_page_mode)
 
         # Connect sliders to their respective spin boxes and vice versa
@@ -345,71 +345,61 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.mirostatTau.setValue(int(param_preset_name["mirostat_tau"]))
         self.mirostatEta.setValue(float(param_preset_name["mirostat_eta"]))
 
-    # Set themes
-    def set_themes(self, theme):
-        extra = {"pyside6": True, "density_scale": "-1", "font_family": ""}
+    def get_toolbox_index(self):
+        # Get current index from leftToolbox, return None if leftToolbox is None
+        return self.leftToolbox.currentIndex() if self.leftToolbox else None
 
-        if theme == "dark":
-            apply_stylesheet(
-                app,
-                theme="dark_amber.xml",
-                css_file="assets/dark_theme.css",
-                extra=extra,
-            )
-        if theme == "light":
-            apply_stylesheet(
-                app,
-                theme="light_amber.xml",
-                css_file="assets/light_theme.css",
-                extra=extra,
-                invert_secondary=True,
-            )
-        if theme == "native":
-            if platform.system() == "Windows":
-                app.setStyle("Fusion")
-            app.setStyleSheet("")
-        print("--- Set theme to:", theme)
+    def manage_contacts(self, contact):
+        # If a contact is provided, get related info and set window title
+        if contact.parent():
+            self.page_mode = "Chat"
+            self.continue_chat = False
+            self.final_prompt_template = {}
+            self.bot_name = contact.text(0)
+            self.contact_parent = contact.parent().text(0) if contact.parent() else None
+            self.history_display(not bool(self.session_dict.get(contact.text(0))))
 
-    def manage_page_mode(self, contact=None):
-        # Get current index from leftToolbox
-        toolbox_index = self.leftToolbox.currentIndex()
+            if self.contact_parent == "Cards":
+                self.get_template(True)
+                if not self.session_dict[self.bot_name]["context"]:
+                    self.outputText.setMarkdown(
+                        self.final_prompt_template["display_text"]
+                    )
+            else:
+                self.get_template(False)
+
+            if self.session_dict[self.bot_name]["context"]:
+                self.button_manager(False, False)
+            else:
+                self.button_manager(True, True)
+
+    def manage_page_mode(self):
+        toolbox_index = self.get_toolbox_index()
 
         # Check the value of toolbox and update page mode accordingly
-        if toolbox_index == 0:
-            self.continue_chat = False
-            self.page_mode = "Instruct"
+        self.page_mode = (
+            "Chat"
+            if toolbox_index == 0
+            else "Simple"
+            if toolbox_index == 1
+            else "Notebook"
+        )
 
-            # If a contact is provided, get related info and set window title
-            if contact.parent():
-                self.final_prompt_template = {}
-                self.bot_name = contact.text(0)
-                self.contact_parent = contact.parent().text(0)
-                self.history_display(not bool(self.session_dict.get(contact.text(0))))
-
-                if contact.parent().text(0) == "Cards":
-                    self.get_template(True)
-                    if not self.session_dict[self.bot_name]["context"]:
-                        self.outputText.setMarkdown(
-                            self.final_prompt_template["display_text"]
-                        )
-                else:
-                    self.get_template(False)
-                self.setWindowTitle(f"AI Messsenger - {self.bot_name}")
-
-        elif toolbox_index == 1:
-            self.page_mode = "Simple"
-            self.outputText.clear()  # temp
-
-        else:  # index is either 2 or something different, so we're in Notebook mode here
-            self.page_mode = "Notebook"
-            self.outputText.clear()  # temp
+        self.button_manager(True, False)
+        self.stopButton.setEnabled(toolbox_index != 2)
 
         # Update whether text output and input are enabled based on notebook value
-        self.outputText.setReadOnly(toolbox_index != 2)
-        self.inputText.setEnabled(toolbox_index != 2)
+        self.outputText.setReadOnly(
+            toolbox_index != 2 if toolbox_index is not None else False
+        )
+        self.inputText.setEnabled(
+            toolbox_index != 2 if toolbox_index is not None else False
+        )
 
         if not (self.generateButton.isEnabled() and bool(self.textgenThread)):
             self.generateButton.setEnabled(True)  # Enable generate button as needed
+
+        self.stopButton.setEnabled(False)
 
     def launch_page_mode(self, btn=None, retry_textgen=False):
         if self.textgenThread:
@@ -420,17 +410,18 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         )  # Store the index in a variable for readability
 
         if currentIndex == 0:
-            user_input = retry_textgen or self.inputText.toPlainText().strip()
-            self._handle_mode(user_input)
+            user_input = retry_textgen or self.inputText.toPlainText()
+            if user_input:
+                self._handle_mode(user_input)
 
-        elif currentIndex == 1:
+        elif currentIndex == 1 and self.inputText.toPlainText():
             self._set_bot_name("Simple")
 
-        elif currentIndex == 2:
+        elif currentIndex == 2 and self.outputText.toPlainText():
             self._set_bot_name("Notebook")
 
     def _handle_mode(self, user_input):
-        if self.inputText.toPlainText() and self.page_mode == "Instruct":
+        if self.inputText.toPlainText() and self.page_mode == "Chat":
             self.add_chat_input_history(self.inputText.toPlainText())
         self.add_chat_messages("user_msgs", user_input)
         self.add_chat_messages("bot_msgs", "")  # Placeholder
@@ -460,7 +451,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(
-            None, "Save File", "", "YAML Files (*.json)", options=options
+            None, "Save File", "", "JSON Files (*.json)", options=options
         )
 
         if file_name:
@@ -503,7 +494,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         status = "Generating..." if generation_enabled else f"Completed{info_message}"
         self.status_bar_msg("Status: " + status)
 
-    def button_manager(self, enable_mode):
+    def button_manager(self, enable_mode, clear):
         inverted_button_state = not enable_mode
 
         buttons = [
@@ -511,15 +502,15 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             self.clearButton,
             self.rewindButton,
             self.retryButton,
-            self.generateButton,
         ]
 
         for button in buttons:
             button.setEnabled(
                 inverted_button_state
             )  # Enable/disable all the buttons based on mode
-
-        self.stopButton.setEnabled(enable_mode)  # Use _ to indicate private method
+        if not clear:
+            self.stopButton.setEnabled(enable_mode)  # Use _ to indicate private method
+            self.generateButton.setEnabled(inverted_button_state)
 
     def history_reset(self):
         self.session_dict[self.bot_name] = {
@@ -527,21 +518,20 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             "bot_msgs": [],
             "context": "",
         }
-        self.outputText.clear()
 
     def history_clear(self):
-        self.history_reset()
-        if self.page_mode == "Instruct":
+        if self.page_mode == "Chat":
             self.write_history_file(SESSION_FILE)
+            self.history_reset()
+        self.outputText.clear()
+        self.button_manager(True, True)
 
     def history_display(self, first_launch):
         if first_launch:
             self.load_history_file()
             if self.bot_name not in self.session_dict:
                 self.history_reset()
-            self.chat_display()
-        else:
-            self.chat_display()
+        self.chat_display()
 
     def write_history_file(self, file_name, manual=False):
         if self.autoSaveSessionCheck.isChecked() or manual:
@@ -552,11 +542,11 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     def load_history_file(self):
         if Path(SESSION_FILE).exists():
+            print("--- Loading session history file")
             with open(SESSION_FILE, "r") as file:
                 session_history = json.load(file)
                 if self.bot_name in session_history:
                     self.session_dict = session_history
-                    self.button_manager(False)
 
     def reset_history(self):
         self.session_dict[self.bot_name] = {
@@ -695,7 +685,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             self.update_context_char()
 
     def rewind_history(self):
-        if not self.page_mode == "Instruct":
+        if not self.page_mode == "Chat":
             return
         if (
             "user_msgs" in self.session_dict[self.bot_name]
@@ -745,7 +735,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     def launch_backend(self):
         # Add user message to session dictionary only if not empty
-        self.button_manager(True)
+        self.button_manager(True, False)
         self.update_generation_status(True, None)
         cpp_params = self.get_llama_cpp_params()
         backend = "exllamav2" if self.backendExllamaCheck.isChecked() else "llama.cpp"
@@ -789,7 +779,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 "<START>",
                 "<END>",
             ]
-            if self.stopStringAutoCheck.isChecked() and self.page_mode == "Instruct"
+            if self.stopStringAutoCheck.isChecked() and self.page_mode == "Chat"
             else []
         )
         stop_strings += (
@@ -867,7 +857,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             self.update_generation_status(False, final_result[1])
             final_text = final_result[0]
 
-            if self.page_mode == "Instruct":
+            if self.page_mode == "Chat":
                 self._handle_result_chat(final_text)
             elif (
                 not self.stream and not self.session_dict[self.bot_name]["user_msgs"]
@@ -875,7 +865,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 self.display_text_nonstream(final_text)
             # print("---" + self.session_dict[self.bot_name]["context"] + "---")
 
-        self.button_manager(False)
+        self.button_manager(False, False)
         self.textgenThread = None
         app.alert(self.centralwidget)
 
@@ -893,9 +883,35 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
     def _update_generation_status(self, status, result):
         self.update_generation_status(status, result)
 
+    # Set themes
+    def set_themes(self, theme):
+        extra = {"pyside6": True, "density_scale": "-1", "font_family": ""}
+
+        if theme == "dark":
+            apply_stylesheet(
+                app,
+                theme="dark_amber.xml",
+                css_file="assets/dark_theme.css",
+                extra=extra,
+            )
+        if theme == "light":
+            apply_stylesheet(
+                app,
+                theme="light_amber.xml",
+                css_file="assets/light_theme.css",
+                extra=extra,
+                invert_secondary=True,
+            )
+        if theme == "native":
+            app.setStyleSheet("")
+        print("--- Set theme to:", theme)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    if platform.system() == "Windows":
+        app.setStyle("Fusion")
 
     extra = {"pyside6": True, "density_scale": "-1", "font_family": ""}
     apply_stylesheet(

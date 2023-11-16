@@ -118,7 +118,7 @@
     <item row="2" column="1">
      <widget class="QPushButton" name="generateButton">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="minimumSize">
        <size>
@@ -305,7 +305,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="paramsBasicPage">
         <property name="geometry">
@@ -320,23 +320,28 @@
          <string>Params - Shared</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="3" column="0" colspan="2">
-          <widget class="QSlider" name="temperatureSlider">
-           <property name="toolTip">
-            <string>Adjust the randomness of the generated text</string>
-           </property>
-           <property name="maximum">
-            <number>199</number>
-           </property>
-           <property name="value">
-            <number>70</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Top K:</string>
            </property>
           </widget>
          </item>
-         <item row="16" column="0" colspan="3">
+         <item row="12" column="0" colspan="2">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Typical P:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Max new tokens:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0" colspan="3">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -349,26 +354,42 @@
            </property>
           </spacer>
          </item>
-         <item row="3" column="2">
-          <widget class="QDoubleSpinBox" name="temperatureSpin">
+         <item row="7" column="2">
+          <widget class="QDoubleSpinBox" name="top_pSpin">
            <property name="toolTip">
-            <string>Adjust the randomness of the generated text</string>
+            <string>Limit the next token selection to a subset of tokens with a cumulative probability above a threshold P</string>
            </property>
            <property name="maximum">
-            <double>5.000000000000000</double>
+            <double>1.000000000000000</double>
            </property>
            <property name="singleStep">
             <double>0.010000000000000</double>
            </property>
            <property name="value">
-            <double>0.700000000000000</double>
+            <double>0.900000000000000</double>
            </property>
           </widget>
          </item>
-         <item row="14" column="0">
-          <widget class="QLabel" name="label_21">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_15">
            <property name="text">
-            <string>Seed:</string>
+            <string>Temperature:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0" colspan="2">
+          <widget class="QSlider" name="top_pSlider">
+           <property name="toolTip">
+            <string>Limit the next token selection to a subset of tokens with a cumulative probability above a threshold P</string>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>90</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -391,13 +412,6 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Top K:</string>
-           </property>
-          </widget>
-         </item>
          <item row="6" column="0">
           <widget class="QLabel" name="label_17">
            <property name="text">
@@ -405,143 +419,19 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Max new tokens:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="0" colspan="2">
-          <widget class="QSlider" name="repetition_penaltySlider">
+         <item row="3" column="0" colspan="2">
+          <widget class="QSlider" name="temperatureSlider">
            <property name="toolTip">
-            <string>Repetition penality value</string>
-           </property>
-           <property name="minimum">
-            <number>100</number>
+            <string>Adjust the randomness of the generated text</string>
            </property>
            <property name="maximum">
-            <number>180</number>
+            <number>199</number>
            </property>
            <property name="value">
-            <number>120</number>
+            <number>70</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="QSlider" name="top_kSlider">
-           <property name="toolTip">
-            <string>Limit the next token selection to the K most probable tokens</string>
-           </property>
-           <property name="maximum">
-            <number>200</number>
-           </property>
-           <property name="value">
-            <number>20</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="13" column="0">
-          <widget class="QSlider" name="typical_pSlider">
-           <property name="toolTip">
-            <string>Locally typical sampling, parameter p (1.0 = disabled)</string>
-           </property>
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="value">
-            <number>100</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_15">
-           <property name="text">
-            <string>Temperature:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Preset:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="2">
-          <widget class="QSpinBox" name="top_kSpin">
-           <property name="toolTip">
-            <string>Limit the next token selection to the K most probable tokens</string>
-           </property>
-           <property name="maximum">
-            <number>200</number>
-           </property>
-           <property name="value">
-            <number>20</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="2">
-          <widget class="QDoubleSpinBox" name="top_pSpin">
-           <property name="toolTip">
-            <string>Limit the next token selection to a subset of tokens with a cumulative probability above a threshold P</string>
-           </property>
-           <property name="maximum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.900000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="13" column="2">
-          <widget class="QDoubleSpinBox" name="typical_pSpin">
-           <property name="toolTip">
-            <string>Locally typical sampling, parameter p (1.0 = disabled)</string>
-           </property>
-           <property name="minimum">
-            <double>0.010000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-           <property name="value">
-            <double>1.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="0" colspan="2">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Typical P:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="QComboBox" name="paramPresets_comboBox">
-           <property name="toolTip">
-            <string>Parameter preset</string>
-           </property>
-           <property name="insertPolicy">
-            <enum>QComboBox::InsertAlphabetically</enum>
            </property>
           </widget>
          </item>
@@ -567,6 +457,25 @@
            </property>
           </widget>
          </item>
+         <item row="13" column="0">
+          <widget class="QSlider" name="typical_pSlider">
+           <property name="toolTip">
+            <string>Locally typical sampling, parameter p (1.0 = disabled)</string>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
          <item row="11" column="2">
           <widget class="QDoubleSpinBox" name="repetition_penaltySpin">
            <property name="toolTip">
@@ -586,42 +495,110 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="0" colspan="2">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Repetition penalty:</string>
+         <item row="3" column="2">
+          <widget class="QDoubleSpinBox" name="temperatureSpin">
+           <property name="toolTip">
+            <string>Adjust the randomness of the generated text</string>
+           </property>
+           <property name="maximum">
+            <double>5.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.700000000000000</double>
            </property>
           </widget>
          </item>
-         <item row="7" column="0" colspan="2">
-          <widget class="QSlider" name="top_pSlider">
+         <item row="1" column="0" colspan="3">
+          <widget class="QComboBox" name="paramPresets_comboBox">
            <property name="toolTip">
-            <string>Limit the next token selection to a subset of tokens with a cumulative probability above a threshold P</string>
+            <string>Parameter preset</string>
            </property>
-           <property name="maximum">
+           <property name="insertPolicy">
+            <enum>QComboBox::InsertAlphabetically</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0" colspan="2">
+          <widget class="QSlider" name="repetition_penaltySlider">
+           <property name="toolTip">
+            <string>Repetition penality value</string>
+           </property>
+           <property name="minimum">
             <number>100</number>
            </property>
+           <property name="maximum">
+            <number>180</number>
+           </property>
            <property name="value">
-            <number>90</number>
+            <number>120</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
-         <item row="15" column="0" colspan="2">
-          <widget class="QSpinBox" name="seedSpin">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Preset:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="2">
+          <widget class="QDoubleSpinBox" name="typical_pSpin">
            <property name="toolTip">
-            <string>Seed value (-1 for random)</string>
+            <string>Locally typical sampling, parameter p (1.0 = disabled)</string>
            </property>
            <property name="minimum">
-            <number>-1</number>
+            <double>0.010000000000000</double>
            </property>
            <property name="maximum">
-            <number>999999999</number>
+            <double>1.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
            </property>
            <property name="value">
-            <number>-1</number>
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QSlider" name="top_kSlider">
+           <property name="toolTip">
+            <string>Limit the next token selection to the K most probable tokens</string>
+           </property>
+           <property name="maximum">
+            <number>200</number>
+           </property>
+           <property name="value">
+            <number>20</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QSpinBox" name="top_kSpin">
+           <property name="toolTip">
+            <string>Limit the next token selection to the K most probable tokens</string>
+           </property>
+           <property name="maximum">
+            <number>200</number>
+           </property>
+           <property name="value">
+            <number>20</number>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0" colspan="2">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Repetition penalty:</string>
            </property>
           </widget>
          </item>
@@ -640,290 +617,7 @@
          <string>Params - More</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_20">
-           <property name="text">
-            <string>Keep prompt n:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="19" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Mirostat Ent:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="Line" name="line">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="14" column="0" colspan="2">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Min P:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0" colspan="2">
-          <widget class="QLabel" name="label_31">
-           <property name="text">
-            <string>Tail Free Sampling:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0" colspan="2">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Frequency penalty:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="18" column="2">
-          <widget class="QSpinBox" name="mirostatEta">
-           <property name="toolTip">
-            <string>Use Mirostat sampling. Top K, Nucleus, Tail Free and Locally Typical samplers are ignored if used. (0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)</string>
-           </property>
-           <property name="maximum">
-            <number>2</number>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="QSpinBox" name="keepLastNSpin">
-           <property name="toolTip">
-            <string>Keep this many tokens when context exceeded (-1 = all)</string>
-           </property>
-           <property name="minimum">
-            <number>-1</number>
-           </property>
-           <property name="maximum">
-            <number>8192</number>
-           </property>
-           <property name="value">
-            <number>2048</number>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0" colspan="2">
-          <widget class="QSlider" name="presencePenaltySlider">
-           <property name="toolTip">
-            <string>Repeat alpha presence penalty (0.0 = disabled)</string>
-           </property>
-           <property name="maximum">
-            <number>300</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_19">
-           <property name="text">
-            <string>Repeat last n:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0" colspan="2">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Presence penalty:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="2">
-          <widget class="QDoubleSpinBox" name="presencePenaltySpin">
-           <property name="toolTip">
-            <string>Repeat alpha presence penalty (0.0 = disabled)</string>
-           </property>
-           <property name="maximum">
-            <double>3.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QSlider" name="keepLastNSlider">
-           <property name="toolTip">
-            <string>Keep this many tokens when context exceeded (-1 = all)</string>
-           </property>
-           <property name="minimum">
-            <number>-1</number>
-           </property>
-           <property name="maximum">
-            <number>8192</number>
-           </property>
-           <property name="value">
-            <number>2048</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="2">
-          <widget class="QDoubleSpinBox" name="freqPenaltySpin">
-           <property name="toolTip">
-            <string>Repeat alpha frequency penalty (0.0 = disabled)</string>
-           </property>
-           <property name="maximum">
-            <double>3.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QSlider" name="repeatLastSlider">
-           <property name="toolTip">
-            <string>Range to sample for repeat penalty (-1 = all)</string>
-           </property>
-           <property name="minimum">
-            <number>-1</number>
-           </property>
-           <property name="maximum">
-            <number>2048</number>
-           </property>
-           <property name="value">
-            <number>256</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="20" column="2">
-          <widget class="QDoubleSpinBox" name="mirostatMode">
-           <property name="toolTip">
-            <string>Set the Mirostat learning rate, parameter eta</string>
-           </property>
-           <property name="maximum">
-            <double>2.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="15" column="0" colspan="2">
-          <widget class="QSlider" name="minPSlider">
-           <property name="toolTip">
-            <string>Sets a minimum base probability threshold for token selection</string>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="15" column="2">
-          <widget class="QDoubleSpinBox" name="minpSpin">
-           <property name="toolTip">
-            <string>Sets a minimum base probability threshold for token selection</string>
-           </property>
-           <property name="maximum">
-            <double>1.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QSpinBox" name="repeatLastSpin">
-           <property name="toolTip">
-            <string>Range to sample for repeat penalty (-1 = all)</string>
-           </property>
-           <property name="minimum">
-            <number>-1</number>
-           </property>
-           <property name="maximum">
-            <number>2048</number>
-           </property>
-           <property name="value">
-            <number>256</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0" colspan="2">
-          <widget class="QSlider" name="freqPenaltySlider">
-           <property name="toolTip">
-            <string>Repeat alpha frequency penalty (0.0 = disabled)</string>
-           </property>
-           <property name="maximum">
-            <number>300</number>
-           </property>
-           <property name="value">
-            <number>0</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="18" column="0">
-          <widget class="QLabel" name="label_14">
-           <property name="text">
-            <string>Mirostat mode:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="20" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Mirostat LR:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="25" column="0" colspan="3">
-          <spacer name="verticalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>718</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="19" column="2">
-          <widget class="QSpinBox" name="mirostatTau">
-           <property name="toolTip">
-            <string>Set the Mirostat target entropy, parameter tau</string>
-           </property>
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>12</number>
-           </property>
-           <property name="value">
-            <number>5</number>
-           </property>
-          </widget>
-         </item>
-         <item row="16" column="0" colspan="2">
-          <widget class="Line" name="line_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="0" colspan="2">
+         <item row="10" column="0">
           <widget class="QSlider" name="tfszSlider">
            <property name="toolTip">
             <string>Tail free sampling, parameter z (1.0 = disabled)</string>
@@ -942,7 +636,21 @@
            </property>
           </widget>
          </item>
-         <item row="11" column="2">
+         <item row="16" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Mirostat LR:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Frequency penalty:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1">
           <widget class="QDoubleSpinBox" name="tfszSpin">
            <property name="toolTip">
             <string>Tail free sampling, parameter z (1.0 = disabled)</string>
@@ -958,6 +666,305 @@
            </property>
            <property name="value">
             <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QSlider" name="keepLastNSlider">
+           <property name="toolTip">
+            <string>Keep this many tokens when context exceeded (-1 = all)</string>
+           </property>
+           <property name="minimum">
+            <number>-1</number>
+           </property>
+           <property name="maximum">
+            <number>8192</number>
+           </property>
+           <property name="value">
+            <number>2048</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_20">
+           <property name="text">
+            <string>Keep prompt n:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QDoubleSpinBox" name="presencePenaltySpin">
+           <property name="toolTip">
+            <string>Repeat alpha presence penalty (0.0 = disabled)</string>
+           </property>
+           <property name="maximum">
+            <double>3.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="15" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Mirostat Ent:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QSpinBox" name="keepLastNSpin">
+           <property name="toolTip">
+            <string>Keep this many tokens when context exceeded (-1 = all)</string>
+           </property>
+           <property name="minimum">
+            <number>-1</number>
+           </property>
+           <property name="maximum">
+            <number>8192</number>
+           </property>
+           <property name="value">
+            <number>2048</number>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="1">
+          <widget class="QSpinBox" name="mirostatEta">
+           <property name="toolTip">
+            <string>Use Mirostat sampling. Top K, Nucleus, Tail Free and Locally Typical samplers are ignored if used. (0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)</string>
+           </property>
+           <property name="maximum">
+            <number>2</number>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_31">
+           <property name="text">
+            <string>Tail Free Sampling:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="0">
+          <widget class="Line" name="line_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Mirostat mode:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Presence penalty:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QSlider" name="repeatLastSlider">
+           <property name="toolTip">
+            <string>Range to sample for repeat penalty (-1 = all)</string>
+           </property>
+           <property name="minimum">
+            <number>-1</number>
+           </property>
+           <property name="maximum">
+            <number>2048</number>
+           </property>
+           <property name="value">
+            <number>256</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0">
+          <widget class="QSlider" name="minPSlider">
+           <property name="toolTip">
+            <string>Sets a minimum base probability threshold for token selection</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="19" column="0">
+          <widget class="QSpinBox" name="seedSpin">
+           <property name="toolTip">
+            <string>Seed value (-1 for random)</string>
+           </property>
+           <property name="minimum">
+            <number>-1</number>
+           </property>
+           <property name="maximum">
+            <number>999999999</number>
+           </property>
+           <property name="value">
+            <number>-1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QDoubleSpinBox" name="freqPenaltySpin">
+           <property name="toolTip">
+            <string>Repeat alpha frequency penalty (0.0 = disabled)</string>
+           </property>
+           <property name="maximum">
+            <double>3.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QSlider" name="presencePenaltySlider">
+           <property name="toolTip">
+            <string>Repeat alpha presence penalty (0.0 = disabled)</string>
+           </property>
+           <property name="maximum">
+            <number>300</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Min P:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>Repeat last n:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="15" column="1">
+          <widget class="QSpinBox" name="mirostatTau">
+           <property name="toolTip">
+            <string>Set the Mirostat target entropy, parameter tau</string>
+           </property>
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>12</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="1">
+          <widget class="QDoubleSpinBox" name="mirostatMode">
+           <property name="toolTip">
+            <string>Set the Mirostat learning rate, parameter eta</string>
+           </property>
+           <property name="maximum">
+            <double>2.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="20" column="0" colspan="2">
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>718</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="repeatLastSpin">
+           <property name="toolTip">
+            <string>Range to sample for repeat penalty (-1 = all)</string>
+           </property>
+           <property name="minimum">
+            <number>-1</number>
+           </property>
+           <property name="maximum">
+            <number>2048</number>
+           </property>
+           <property name="value">
+            <number>256</number>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="1">
+          <widget class="QDoubleSpinBox" name="minpSpin">
+           <property name="toolTip">
+            <string>Sets a minimum base probability threshold for token selection</string>
+           </property>
+           <property name="maximum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="18" column="0">
+          <widget class="QLabel" name="label_21">
+           <property name="text">
+            <string>Seed:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QSlider" name="freqPenaltySlider">
+           <property name="toolTip">
+            <string>Repeat alpha frequency penalty (0.0 = disabled)</string>
+           </property>
+           <property name="maximum">
+            <number>300</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="17" column="0">
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
