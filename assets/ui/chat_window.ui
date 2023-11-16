@@ -118,7 +118,7 @@
     <item row="2" column="1">
      <widget class="QPushButton" name="generateButton">
       <property name="enabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="minimumSize">
        <size>
@@ -133,26 +133,13 @@
        </size>
       </property>
       <property name="toolTip">
-       <string>Send (CTRL+Enter)</string>
+       <string>Start generation</string>
       </property>
       <property name="text">
        <string>Gen</string>
       </property>
       <property name="shortcut">
        <string>Ctrl+Return</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPlainTextEdit" name="inputText">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>100</height>
-       </size>
-      </property>
-      <property name="placeholderText">
-       <string>Type something here</string>
       </property>
      </widget>
     </item>
@@ -208,7 +195,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>796</height>
+          <height>832</height>
          </rect>
         </property>
         <attribute name="label">
@@ -313,7 +300,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>760</height>
+          <height>796</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1014,8 +1001,14 @@
            <property name="text">
             <string>You</string>
            </property>
+           <property name="frame">
+            <bool>true</bool>
+           </property>
            <property name="placeholderText">
             <string>You</string>
+           </property>
+           <property name="clearButtonEnabled">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -1418,7 +1411,7 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1490</x>
+     <x>1496</x>
      <y>166</y>
     </hint>
     <hint type="destinationlabel">
@@ -1438,7 +1431,7 @@
      <y>174</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1490</x>
+     <x>1496</x>
      <y>166</y>
     </hint>
    </hints>
@@ -1450,12 +1443,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1403</x>
-     <y>221</y>
+     <x>1496</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1522</x>
-     <y>229</y>
+     <x>1563</x>
+     <y>238</y>
     </hint>
    </hints>
   </connection>
@@ -1466,12 +1459,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1526</x>
-     <y>223</y>
+     <x>1563</x>
+     <y>238</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1365</x>
-     <y>225</y>
+     <x>1496</x>
+     <y>230</y>
     </hint>
    </hints>
   </connection>

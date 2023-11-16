@@ -78,17 +78,11 @@ class Ui_ChatWindow(object):
 
         self.generateButton = QPushButton(self.centralwidget)
         self.generateButton.setObjectName(u"generateButton")
-        self.generateButton.setEnabled(True)
+        self.generateButton.setEnabled(False)
         self.generateButton.setMinimumSize(QSize(64, 64))
         self.generateButton.setMaximumSize(QSize(64, 64))
 
         self.gridLayout.addWidget(self.generateButton, 2, 1, 1, 1)
-
-        self.inputText = QPlainTextEdit(self.centralwidget)
-        self.inputText.setObjectName(u"inputText")
-        self.inputText.setMaximumSize(QSize(16777215, 100))
-
-        self.gridLayout.addWidget(self.inputText, 2, 0, 1, 1)
 
         self.inputHistoryCombo = QComboBox(self.centralwidget)
         self.inputHistoryCombo.setObjectName(u"inputHistoryCombo")
@@ -112,7 +106,7 @@ class Ui_ChatWindow(object):
         self.leftToolbox.setMaximumSize(QSize(256, 16777215))
         self.chatPage = QWidget()
         self.chatPage.setObjectName(u"chatPage")
-        self.chatPage.setGeometry(QRect(0, 0, 256, 796))
+        self.chatPage.setGeometry(QRect(0, 0, 256, 832))
         self.gridLayout_5 = QGridLayout(self.chatPage)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.contactsTree = QTreeWidget(self.chatPage)
@@ -150,7 +144,7 @@ class Ui_ChatWindow(object):
         self.rightToolbox.setMaximumSize(QSize(256, 16777215))
         self.paramsBasicPage = QWidget()
         self.paramsBasicPage.setObjectName(u"paramsBasicPage")
-        self.paramsBasicPage.setGeometry(QRect(0, 0, 256, 760))
+        self.paramsBasicPage.setGeometry(QRect(0, 0, 256, 796))
         self.gridLayout_2 = QGridLayout(self.paramsBasicPage)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.label_5 = QLabel(self.paramsBasicPage)
@@ -524,6 +518,8 @@ class Ui_ChatWindow(object):
 
         self.usernameLine = QLineEdit(self.preferencesPage)
         self.usernameLine.setObjectName(u"usernameLine")
+        self.usernameLine.setFrame(True)
+        self.usernameLine.setClearButtonEnabled(False)
 
         self.gridLayout_3.addWidget(self.usernameLine, 4, 0, 1, 1)
 
@@ -735,13 +731,12 @@ class Ui_ChatWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.stopButton.setText(QCoreApplication.translate("ChatWindow", u"St", None))
 #if QT_CONFIG(tooltip)
-        self.generateButton.setToolTip(QCoreApplication.translate("ChatWindow", u"Send (CTRL+Enter)", None))
+        self.generateButton.setToolTip(QCoreApplication.translate("ChatWindow", u"Start generation", None))
 #endif // QT_CONFIG(tooltip)
         self.generateButton.setText(QCoreApplication.translate("ChatWindow", u"Gen", None))
 #if QT_CONFIG(shortcut)
         self.generateButton.setShortcut(QCoreApplication.translate("ChatWindow", u"Ctrl+Return", None))
 #endif // QT_CONFIG(shortcut)
-        self.inputText.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"Type something here", None))
 #if QT_CONFIG(tooltip)
         self.clearButton.setToolTip(QCoreApplication.translate("ChatWindow", u"Clear the output history", None))
 #endif // QT_CONFIG(tooltip)

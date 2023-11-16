@@ -1,8 +1,16 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QFileDialog
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QTreeWidgetItem,
+    QFileDialog,
+    QPlainTextEdit,
+)
 from PySide6.QtCore import QThread, Signal, Slot, QSize
 from pathlib import Path
 from PySide6.QtGui import QIcon, QTextCursor
+from PySide6.QtCore import Qt
+
 from qt_material import apply_stylesheet
 import glob
 import base64
@@ -23,6 +31,19 @@ CHARACTER_PRESETS_DIR = Path("presets/Characters/")
 CARDS_PRESETS_DIR = Path("presets/Cards/")
 SETTINGS_FILE = Path("saved/settings.json")
 SESSION_FILE = Path("saved/session.json")
+
+
+class InputTextEdit(QPlainTextEdit):
+    def __init__(self, ui):
+        super().__init__()
+        self.ui = ui
+        self.last_key = 0
+
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        if event.key() == Qt.Key_Return and self.last_key != 16777248:
+            self.ui.generateButton.click()
+        self.last_key = int(event.key())
 
 
 class SettingsManager:
@@ -250,6 +271,12 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.bot_prompt = ""
         self.chat_input_history = []
         self.textgenThread = None
+        
+        # Add custom text input class
+        self.inputText = InputTextEdit(self)
+        self.inputText.setObjectName("inputText")
+        self.inputText.setMaximumSize(QSize(16777215, 100))
+        self.gridLayout.addWidget(self.inputText, 2, 0, 1, 1)
 
     def set_window_icon(self):
         icon = QIcon()
