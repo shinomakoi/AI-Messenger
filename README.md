@@ -38,4 +38,8 @@ To launch the app, use:
 python main.py
 ```
 
+**Character cards**
+
+Place V2 character cards (such as from Chub.ai) in the presets/Cards directory
+
 Uses https://github.com/UN-GCPDS/qt-material for themes
