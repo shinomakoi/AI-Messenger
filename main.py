@@ -394,7 +394,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                     )
             else:
                 self.get_template(False)
-
+            self.generateButton.setEnabled(True)
             if self.session_dict[self.bot_name]["context"]:
                 self.button_manager(False, False)
             else:
