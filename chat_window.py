@@ -203,7 +203,7 @@ class Ui_ChatWindow(object):
 
         self.temperatureSlider = QSlider(self.paramsBasicPage)
         self.temperatureSlider.setObjectName(u"temperatureSlider")
-        self.temperatureSlider.setMaximum(199)
+        self.temperatureSlider.setMaximum(400)
         self.temperatureSlider.setValue(70)
         self.temperatureSlider.setOrientation(Qt.Horizontal)
 
@@ -239,7 +239,7 @@ class Ui_ChatWindow(object):
 
         self.temperatureSpin = QDoubleSpinBox(self.paramsBasicPage)
         self.temperatureSpin.setObjectName(u"temperatureSpin")
-        self.temperatureSpin.setMaximum(5.000000000000000)
+        self.temperatureSpin.setMaximum(4.000000000000000)
         self.temperatureSpin.setSingleStep(0.010000000000000)
         self.temperatureSpin.setValue(0.700000000000000)
 

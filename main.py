@@ -229,12 +229,12 @@ class TextGenThread(QThread):
             # Append the response to the final text and emit the result ready signal
             final_text += response["content"]
             self.resultReady.emit(response["content"])
-        self._emit_final_result(final_text, response=None)
+        self._emit_final_result(final_text, response)
 
     def _generate_nostream(self):
         # Get generated text without streaming
         response = cpp_server_gen.generate_nostream(self.params)
-        self._emit_final_result(response["content"], response=None)
+        self._emit_final_result(response["content"], response)
 
     def _exllamav2_generate(self):
         if self.stream_enabled:
@@ -923,9 +923,6 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.update_context()
         self.chat_display()
         self.write_history_file(SESSION_FILE)
-
-    def _update_generation_status(self, status, result):
-        self.update_generation_status(status, result)
 
     # Set themes
     def set_themes(self, theme):
