@@ -271,7 +271,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.bot_prompt = ""
         self.chat_input_history = []
         self.textgenThread = None
-        
+
         # Add custom text input class
         self.inputText = InputTextEdit(self)
         self.inputText.setObjectName("inputText")
@@ -399,6 +399,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 self.button_manager(False, False)
             else:
                 self.button_manager(True, True)
+            self.outputText.setPlaceholderText(contact.text(0))
 
     def manage_page_mode(self):
         toolbox_index = self.get_toolbox_index()
@@ -632,7 +633,9 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         character_template = "<|user|> <|user-message|>\n<|bot|> <|bot-message|>\n"
 
         if contact_mode == "presets/Characters":
-            chat_preset["example_dialogue"] = chat_preset["example_dialogue"]
+            chat_preset["example_dialogue"] = str(
+                chat_preset["example_dialogue"]
+            ).replace("{{user}}", self.usernameLine.text() + ":")
 
             chat_preset["system_message"] = (
                 chat_preset["context"] + "\n" + chat_preset["example_dialogue"]
@@ -670,11 +673,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     def update_context_char(self):
         self.final_prompt_template["user_name_prefix"] = self.usernameLine.text() + ":"
-        self.final_prompt_template["sys_template"] = (
-            self.final_prompt_template["sys_template"]
-            .replace("{{char}}", self.final_prompt_template["bot_name_prefix"])
-            .replace("{{user}}", self.usernameLine.text() + ":")
-        )
+        self.final_prompt_template["sys_template"]
 
     def update_context(self):
         self.final_prompt_template["sys_template"] = self.final_prompt_template[
