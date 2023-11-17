@@ -51,6 +51,13 @@ class SettingsManager:
         pass
 
     def save_settings(self, ui):
+        if ui.themeDarkRadio.isChecked():
+            theme = "dark"
+        elif ui.themeLightRadio.isChecked():
+            theme = "light"
+        elif ui.themeNativeRadio.isChecked():
+            theme = "native"
+
         settings = {
             "prefs": {
                 "stream": ui.streamCheck.isChecked(),
@@ -66,6 +73,7 @@ class SettingsManager:
                 "backend": "exllamav2"
                 if ui.backendExllamaCheck.isChecked()
                 else "llama.cpp",
+                "theme": theme,
             },
             "cpp_params": {
                 "preset": ui.paramPresets_comboBox.currentText(),
@@ -107,6 +115,14 @@ class SettingsManager:
             ui.backendExllamaCheck.setChecked(True)
         else:
             ui.backendCppCheck.setChecked(True)
+
+        if prefs["theme"] == "dark":
+            ui.themeDarkRadio.setChecked(True)
+        elif prefs["theme"] == "light":
+            ui.themeLightRadio.setChecked(True)
+        elif prefs["theme"] == "native":
+            ui.themeNativeRadio.setChecked(True)
+        ui.set_themes(prefs["theme"]) 
 
         basic_params = settings["cpp_params"]
         ui.paramPresets_comboBox.setCurrentText(basic_params["preset"])
@@ -426,7 +442,10 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
         if not (self.generateButton.isEnabled() and bool(self.textgenThread)):
             self.generateButton.setEnabled(True)  # Enable generate button as needed
-
+        
+        if self.page_mode != "Chat":
+            self.outputText.clear()
+            
         self.stopButton.setEnabled(False)
 
     def launch_page_mode(self, btn=None, retry_textgen=False):
@@ -615,8 +634,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             display_text.replace("</s>", "").replace("<START>", "").replace("<END>", "")
         )
         self.outputText.setMarkdown(display_text)
-        if self.bot_prompt == "\n":
-            self.outputText.append("")
+        self.outputText.append("")
         self.scroll_to_bottom()
 
     def get_chat_presets(self):
@@ -938,14 +956,6 @@ if __name__ == "__main__":
 
     if platform.system() == "Windows":
         app.setStyle("Fusion")
-
-    extra = {"pyside6": True, "density_scale": "-1", "font_family": ""}
-    apply_stylesheet(
-        app,
-        theme="dark_amber.xml",
-        css_file="assets/dark_theme.css",
-        extra=extra,
-    )
 
     window = ChatWindow()
     window.show()

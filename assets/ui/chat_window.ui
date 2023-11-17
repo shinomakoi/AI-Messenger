@@ -138,9 +138,6 @@
       <property name="text">
        <string>Gen</string>
       </property>
-      <property name="shortcut">
-       <string>Ctrl+Return</string>
-      </property>
      </widget>
     </item>
     <item row="1" column="0">
@@ -195,7 +192,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>832</height>
+          <height>862</height>
          </rect>
         </property>
         <attribute name="label">
@@ -237,7 +234,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>796</height>
+          <height>862</height>
          </rect>
         </property>
         <attribute name="label">
@@ -265,7 +262,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>796</height>
+          <height>862</height>
          </rect>
         </property>
         <attribute name="label">
@@ -300,7 +297,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>796</height>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -597,7 +594,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>760</height>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -963,7 +960,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>760</height>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1127,7 +1124,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>760</height>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1262,6 +1259,9 @@
          </item>
          <item row="2" column="0">
           <widget class="QCheckBox" name="autoSaveSessionCheck">
+           <property name="toolTip">
+            <string>Auto save session to file after generation</string>
+           </property>
            <property name="text">
             <string>Auto save session</string>
            </property>
@@ -1274,6 +1274,9 @@
           <widget class="QLineEdit" name="bosIdText">
            <property name="toolTip">
             <string>Override BOS token (llama.cpp only)</string>
+           </property>
+           <property name="placeholderText">
+            <string>2</string>
            </property>
           </widget>
          </item>
@@ -1290,7 +1293,7 @@
      <x>0</x>
      <y>0</y>
      <width>1582</width>
-     <height>27</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
