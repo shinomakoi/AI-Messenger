@@ -40,6 +40,10 @@ class Ui_ChatWindow(object):
         self.actionSave_settings.setObjectName(u"actionSave_settings")
         self.actionSave_session = QAction(ChatWindow)
         self.actionSave_session.setObjectName(u"actionSave_session")
+        self.actionReload_contacts = QAction(ChatWindow)
+        self.actionReload_contacts.setObjectName(u"actionReload_contacts")
+        self.actionCharacter = QAction(ChatWindow)
+        self.actionCharacter.setObjectName(u"actionCharacter")
         self.centralwidget = QWidget(ChatWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -110,9 +114,6 @@ class Ui_ChatWindow(object):
         self.gridLayout_5 = QGridLayout(self.chatPage)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.contactsTree = QTreeWidget(self.chatPage)
-        QTreeWidgetItem(self.contactsTree)
-        QTreeWidgetItem(self.contactsTree)
-        QTreeWidgetItem(self.contactsTree)
         self.contactsTree.setObjectName(u"contactsTree")
         self.contactsTree.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
@@ -677,6 +678,8 @@ class Ui_ChatWindow(object):
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
         self.menuHelp.setObjectName(u"menuHelp")
+        self.menuEditors = QMenu(self.menubar)
+        self.menuEditors.setObjectName(u"menuEditors")
         ChatWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(ChatWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -684,11 +687,15 @@ class Ui_ChatWindow(object):
 
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
+        self.menubar.addAction(self.menuEditors.menuAction())
+        self.menuFile.addAction(self.actionReload_contacts)
+        self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave_settings)
         self.menuFile.addAction(self.actionSave_session)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
         self.menuHelp.addAction(self.actionAbout)
+        self.menuEditors.addAction(self.actionCharacter)
 
         self.retranslateUi(ChatWindow)
         self.top_kSlider.valueChanged.connect(self.top_kSpin.setValue)
@@ -714,6 +721,8 @@ class Ui_ChatWindow(object):
         self.actionAbout.setText(QCoreApplication.translate("ChatWindow", u"About", None))
         self.actionSave_settings.setText(QCoreApplication.translate("ChatWindow", u"Save settings", None))
         self.actionSave_session.setText(QCoreApplication.translate("ChatWindow", u"Save session", None))
+        self.actionReload_contacts.setText(QCoreApplication.translate("ChatWindow", u"Reload contacts", None))
+        self.actionCharacter.setText(QCoreApplication.translate("ChatWindow", u"Character", None))
 #if QT_CONFIG(tooltip)
         self.continueButton.setToolTip(QCoreApplication.translate("ChatWindow", u"Rewinds the chat 1 turn", None))
 #endif // QT_CONFIG(tooltip)
@@ -740,17 +749,6 @@ class Ui_ChatWindow(object):
         self.clearButton.setText(QCoreApplication.translate("ChatWindow", u"Clr", None))
         ___qtreewidgetitem = self.contactsTree.headerItem()
         ___qtreewidgetitem.setText(0, QCoreApplication.translate("ChatWindow", u"Contacts", None));
-
-        __sortingEnabled = self.contactsTree.isSortingEnabled()
-        self.contactsTree.setSortingEnabled(False)
-        ___qtreewidgetitem1 = self.contactsTree.topLevelItem(0)
-        ___qtreewidgetitem1.setText(0, QCoreApplication.translate("ChatWindow", u"Assistants", None));
-        ___qtreewidgetitem2 = self.contactsTree.topLevelItem(1)
-        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("ChatWindow", u"Characters", None));
-        ___qtreewidgetitem3 = self.contactsTree.topLevelItem(2)
-        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("ChatWindow", u"Cards", None));
-        self.contactsTree.setSortingEnabled(__sortingEnabled)
-
         self.leftToolbox.setItemText(self.leftToolbox.indexOf(self.chatPage), QCoreApplication.translate("ChatWindow", u"Chat", None))
         self.leftToolbox.setItemText(self.leftToolbox.indexOf(self.simplePage), QCoreApplication.translate("ChatWindow", u"Completion", None))
         self.leftToolbox.setItemText(self.leftToolbox.indexOf(self.notebookPage), QCoreApplication.translate("ChatWindow", u"Notebook", None))
@@ -938,5 +936,6 @@ class Ui_ChatWindow(object):
         self.rightToolbox.setItemText(self.rightToolbox.indexOf(self.themesPage), QCoreApplication.translate("ChatWindow", u"Preferences - More", None))
         self.menuFile.setTitle(QCoreApplication.translate("ChatWindow", u"File", None))
         self.menuHelp.setTitle(QCoreApplication.translate("ChatWindow", u"Help", None))
+        self.menuEditors.setTitle(QCoreApplication.translate("ChatWindow", u"Editors", None))
     # retranslateUi
 

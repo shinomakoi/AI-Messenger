@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CharacterForm</class>
+ <widget class="QWidget" name="CharacterForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>674</width>
+    <height>856</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Character create</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="7" column="0">
+    <widget class="QPushButton" name="saveButton">
+     <property name="text">
+      <string>Save</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QPlainTextEdit" name="charExampleDialog">
+     <property name="placeholderText">
+      <string>Example dialog</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QPlainTextEdit" name="charScenario">
+     <property name="toolTip">
+      <string>Use {{char}} as user name placeholder</string>
+     </property>
+     <property name="placeholderText">
+      <string>Scenario</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLineEdit" name="charName">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Character's name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLineEdit" name="charTags">
+     <property name="placeholderText">
+      <string>Tags</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPlainTextEdit" name="charPersona">
+     <property name="placeholderText">
+      <string>Character's personality</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLineEdit" name="charTemplate">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Turn template (leave empty for default)</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

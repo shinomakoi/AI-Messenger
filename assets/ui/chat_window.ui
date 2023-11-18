@@ -209,21 +209,6 @@
              <string>Contacts</string>
             </property>
            </column>
-           <item>
-            <property name="text">
-             <string>Assistants</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Characters</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Cards</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>
@@ -1300,6 +1285,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionReload_contacts"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_settings"/>
     <addaction name="actionSave_session"/>
     <addaction name="separator"/>
@@ -1311,8 +1298,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuEditors">
+    <property name="title">
+     <string>Editors</string>
+    </property>
+    <addaction name="actionCharacter"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuEditors"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSettings">
@@ -1338,6 +1332,16 @@
   <action name="actionSave_session">
    <property name="text">
     <string>Save session</string>
+   </property>
+  </action>
+  <action name="actionReload_contacts">
+   <property name="text">
+    <string>Reload contacts</string>
+   </property>
+  </action>
+  <action name="actionCharacter">
+   <property name="text">
+    <string>Character</string>
    </property>
   </action>
  </widget>
