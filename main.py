@@ -134,8 +134,8 @@ class SettingsManager:
                 settings = json.load(file)
                 self._update_ui(ui, settings)
                 print("--- Loaded settings")
-        except FileNotFoundError:
-            print("Settings file not found.")
+        except Exception as error:
+            print(f"--- Could not loading settings:\n{error}")
 
     def _update_ui(self, ui, settings):
         prefs = settings["prefs"]
@@ -214,15 +214,15 @@ class CharacterCard:
             f"{result['first_mes']}"
         )
 
-        def replace_placeholders(temp):
-            temp = (
-                str(temp)
+        def replace_placeholders(message):
+            message = (
+                str(message)
                 .replace("{{char}}", result["name"])
                 .replace("{{user}}", user_name)
                 .replace("{{Char}}", result["name"])
                 .replace("{{User}}", user_name)
             )
-            return temp
+            return message
 
         template["display_text"] = replace_placeholders(result["first_mes"])
         template["system_message"] = replace_placeholders(template["system_message"])
@@ -580,7 +580,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
     def update_generation_status(self, generation_enabled, results):
         info_message = ""
 
-        if results and not generation_enabled:
+        if results and not generation_enabled and self.backendCppCheck.isChecked():
             try:
                 # print(results["generation_settings"])
                 tps = round(results["timings"]["predicted_per_second"], 2)
@@ -705,36 +705,40 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         with open(f"{contact_mode}/{self.bot_name}.json", "r") as file:
             print("--- Getting chat preset...")
             chat_preset = json.load(file)
-        character_template = "<|user|> <|user-message|>\n<|bot|> <|bot-message|>\n"
+
+        def get_char_preset():
+            character_template = "<|user|> <|user-message|>\n<|bot|> <|bot-message|>\n"
+            final_template["user_name_prefix"] = self.usernameLine.text() + ":"
+
+            final_template["system_message"] = (
+                f"Name: {chat_preset['name']}\n\n"
+                f"Persona: {chat_preset['persona']}\n\n"
+                f"Scenario: {chat_preset['scenario'].strip()}\n\n"
+                f"Tags: {chat_preset['tags']}"
+            )
+            final_template["system_message"] = final_template["system_message"].replace(
+                "{{user}}", final_template["user_name_prefix"]
+            )
+
+            final_template["sys_template"] = "<|system-message|>\n\n"
+            final_template["turn_template"] = character_template
+            final_template["bot_name_prefix"] = chat_preset["name"] + ":"
+
+            return final_template
+
+        def get_assistant_preset():
+            final_template["sys_template"] = chat_preset["context"]
+            final_template["turn_template"] = chat_preset["turn_template"]
+            final_template["user_name_prefix"] = chat_preset["user"]
+            final_template["bot_name_prefix"] = chat_preset["bot"]
+            final_template["system_message"] = chat_preset["system_message"]
+
+            return final_template
 
         if contact_mode == "presets/Characters":
-            chat_preset["example_dialogue"] = str(
-                chat_preset["example_dialogue"]
-            ).replace("{{user}}", self.usernameLine.text() + ":")
-
-            chat_preset["system_message"] = (
-                chat_preset["context"] + "\n" + chat_preset["example_dialogue"]
-            )
-            chat_preset["context"] = "<|system-message|>\n\n"
-
-        final_template["sys_template"] = chat_preset["context"]
-        final_template["turn_template"] = (
-            chat_preset["turn_template"]
-            if self.contact_parent == "Assistants"
-            else character_template
-        )
-        final_template["user_name_prefix"] = (
-            chat_preset["user"]
-            if self.contact_parent == "Assistants"
-            else self.usernameLine.text() + ":"
-        )
-        final_template["bot_name_prefix"] = (
-            chat_preset["bot"]
-            if self.contact_parent == "Assistants"
-            else chat_preset["name"] + ":"
-        )
-
-        final_template["system_message"] = chat_preset["system_message"]
+            final_template = get_char_preset()
+        else:
+            final_template = get_assistant_preset()
 
         return final_template
 
@@ -762,7 +766,6 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         ].replace("<|system-message|>", self.final_prompt_template["system_message"])
 
         self.user_name_prefix = self.final_prompt_template["user_name_prefix"].strip()
-        print(self.final_prompt_template["system_message"])
 
         user_template, bot_prompt = self.final_prompt_template["turn_template"].split(
             "<|bot-message|>"
