@@ -6,7 +6,7 @@ Features:
 - LLama.cpp and Exllama V2 as backends
 - LLaVA multimodal support
 - Chat, completion, notebook modes
-- Model paramater presets
+- Model parameter presets
 - Instruct presets + V2 Tavern character cards
 - Save chat sessions
 
