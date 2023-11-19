@@ -676,6 +676,8 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             self.session_dict[self.bot_name]["user_msgs"],
             self.session_dict[self.bot_name]["bot_msgs"],
         ):
+            # user_msg=user_msg.replace("\n", "<br />")
+            # bot_msg=bot_msg.replace("\n", "<br />")
             display_text += f"""**<span style="color:#a92828">{self.usernameLine.text()}</span>**
 
 {user_msg}
@@ -690,7 +692,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         display_text = (
             display_text.replace("</s>", "").replace("<START>", "").replace("<END>", "")
         )
-        self.outputText.setMarkdown(display_text)
+        self.outputText.setMarkdown(display_text.strip())
         self.outputText.append("")
         self.scroll_to_bottom()
 
@@ -708,13 +710,14 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
         def get_char_preset():
             character_template = "<|user|> <|user-message|>\n<|bot|> <|bot-message|>\n"
-            final_template["user_name_prefix"] = self.usernameLine.text() + ":"
+            final_template["user_name_prefix"] = self.usernameLine.text()
 
             final_template["system_message"] = (
                 f"Name: {chat_preset['name']}\n\n"
                 f"Persona: {chat_preset['persona']}\n\n"
                 f"Scenario: {chat_preset['scenario'].strip()}\n\n"
-                f"Tags: {chat_preset['tags']}"
+                f"Tags: {chat_preset['tags']}\n\n"
+                f"{chat_preset['example_dialog']}"
             )
             final_template["system_message"] = final_template["system_message"].replace(
                 "{{user}}", final_template["user_name_prefix"]

@@ -192,7 +192,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>862</height>
+          <height>832</height>
          </rect>
         </property>
         <attribute name="label">
@@ -218,8 +218,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>862</height>
+          <width>98</width>
+          <height>28</height>
          </rect>
         </property>
         <attribute name="label">
@@ -246,8 +246,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>862</height>
+          <width>98</width>
+          <height>28</height>
          </rect>
         </property>
         <attribute name="label">
@@ -282,7 +282,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>831</height>
+          <height>796</height>
          </rect>
         </property>
         <attribute name="label">
@@ -578,8 +578,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>831</height>
+          <width>219</width>
+          <height>601</height>
          </rect>
         </property>
         <attribute name="label">
@@ -944,8 +944,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>831</height>
+          <width>155</width>
+          <height>536</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1108,8 +1108,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>831</height>
+          <width>191</width>
+          <height>493</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1278,7 +1278,7 @@
      <x>0</x>
      <y>0</y>
      <width>1582</width>
-     <height>23</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1305,8 +1305,8 @@
     <addaction name="actionCharacter"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuHelp"/>
    <addaction name="menuEditors"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSettings">
