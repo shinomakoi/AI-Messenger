@@ -42,4 +42,6 @@ python main.py
 
 Place V2 character cards (such as from Chub.ai) in the presets/Cards directory
 
+![image](https://github.com/shinomakoi/AI-Messenger/assets/112139428/3cbc7185-80b6-4241-8e3e-6cd3c123a534)
+
 Uses https://github.com/UN-GCPDS/qt-material for themes
