@@ -44,12 +44,37 @@ class CharacterWindow(QWidget, Ui_CharacterForm):
         self.saveButton.clicked.connect(self.save)
 
     def save(self):
-        turn_template = (
+        # Check if character name is not empty
+        if not self.is_character_name_filled():
+            print("--- Must fill in character name")
+            return
+
+        turn_template = self.get_turn_template()
+        char_dict = self.get_character_data(turn_template)
+
+        try:
+            self.write_to_file(char_dict)
+            print("--- Saved character file")
+        except Exception as e:
+            print(f"--- Error saving character file: {str(e)}")
+
+    def set_window_icon(self):
+        icon = QIcon()
+        icon.addFile(str(APP_ICON), QSize(), QIcon.Normal, QIcon.Off)
+        self.setWindowIcon(icon)
+
+    def is_character_name_filled(self):
+        return bool(self.charName.text().strip())
+
+    def get_turn_template(self):
+        return (
             self.charTemplate.text()
             if self.charTemplate.text().strip()
             else "<|user|> <|user-message|>\n<|bot|> <|bot-message|>\n"
         )
-        char_dict = {
+
+    def get_character_data(self, turn_template):
+        return {
             "name": self.charName.text(),
             "persona": self.charPersona.toPlainText(),
             "scenario": self.charScenario.toPlainText(),
@@ -58,18 +83,10 @@ class CharacterWindow(QWidget, Ui_CharacterForm):
             "turn_template": turn_template,
         }
 
+    def write_to_file(self, char_dict):
         file_name = f"{CHARACTER_PRESETS_DIR}/{self.charName.text()}.json"
-        if self.charName.text().strip():
-            with open(file_name, "w") as file:
-                json.dump(char_dict, file)
-            print("--- Saved character file")
-        else:
-            print("--- Must fill in character name")
-
-    def set_window_icon(self):
-        icon = QIcon()
-        icon.addFile(str(APP_ICON), QSize(), QIcon.Normal, QIcon.Off)
-        self.setWindowIcon(icon)
+        with open(file_name, "w") as file:
+            json.dump(char_dict, file)
 
 
 class InputTextEdit(QPlainTextEdit):
@@ -89,14 +106,16 @@ class SettingsManager:
     def __init__(self):
         pass
 
-    def save_settings(self, ui):
+    def _get_theme(self, ui):
         if ui.themeDarkRadio.isChecked():
-            theme = "dark"
+            return "dark"
         elif ui.themeLightRadio.isChecked():
-            theme = "light"
+            return "light"
         elif ui.themeNativeRadio.isChecked():
-            theme = "native"
+            return "native"
 
+    def save_settings(self, ui):
+        theme = self._get_theme(ui)
         settings = {
             "prefs": {
                 "stream": ui.streamCheck.isChecked(),
@@ -125,8 +144,8 @@ class SettingsManager:
             with open(SETTINGS_FILE, "w") as file:
                 json.dump(settings, file)
             print("--- Saved settings")
-        except FileNotFoundError:
-            print("Settings file not found.")
+        except Exception as error:
+            print(f"--- Could not save settings:\n{error}")
 
     def load_settings(self, ui):
         try:
@@ -134,8 +153,12 @@ class SettingsManager:
                 settings = json.load(file)
                 self._update_ui(ui, settings)
                 print("--- Loaded settings")
+        except FileNotFoundError:
+            print("Settings file not found.")
+            ui.set_themes("dark")
+
         except Exception as error:
-            print(f"--- Could not loading settings:\n{error}")
+            print(f"--- Could not load settings:\n{error}")
 
     def _update_ui(self, ui, settings):
         prefs = settings["prefs"]
@@ -338,6 +361,11 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         icon.addFile(str(APP_ICON), QSize(), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
         self.status_bar_msg("Status: Ready")
+
+    def closeEvent(self, event):
+        # Close the child window when the parent window is closed
+        self.character_window.close()
+        event.accept()
 
     def connect_signals(self):
         # Connect buttons to their respective functions
@@ -570,9 +598,10 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     # Add the chat input to the combo box and the history list
     def add_chat_input_history(self, chat_input):
-        self.chat_input_history.append(chat_input)
-        chat_input = chat_input.replace("\n", "")[:128]
-        self.inputHistoryCombo.addItem(str(chat_input))
+        if self.inputHistoryCombo.findText(chat_input) == -1:
+            self.chat_input_history.append(chat_input)
+            chat_input = chat_input.replace("\n", "")[:128]
+            self.inputHistoryCombo.addItem(chat_input)
 
     def status_bar_msg(self, msg):
         self.statusbar.showMessage(msg)
@@ -596,7 +625,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 print(f"--- No data for: {str(e)}")
 
         status = "Generating..." if generation_enabled else f"Completed{info_message}"
-        self.status_bar_msg("Status: " + status)
+        self.status_bar_msg(f"Status: {status}")
 
     def button_manager(self, enable_mode, clear):
         inverted_button_state = not enable_mode
@@ -613,7 +642,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 inverted_button_state
             )  # Enable/disable all the buttons based on mode
         if not clear:
-            self.stopButton.setEnabled(enable_mode)  # Use _ to indicate private method
+            self.stopButton.setEnabled(enable_mode)
             self.generateButton.setEnabled(inverted_button_state)
 
     def history_reset(self):
@@ -708,40 +737,33 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             print("--- Getting chat preset...")
             chat_preset = json.load(file)
 
-        def get_char_preset():
-            character_template = "<|user|> <|user-message|>\n<|bot|> <|bot-message|>\n"
-            final_template["user_name_prefix"] = self.usernameLine.text()
-
-            final_template["system_message"] = (
-                f"Name: {chat_preset['name']}\n\n"
-                f"Persona: {chat_preset['persona']}\n\n"
-                f"Scenario: {chat_preset['scenario'].strip()}\n\n"
-                f"Tags: {chat_preset['tags']}\n\n"
-                f"{chat_preset['example_dialog']}"
-            )
-            final_template["system_message"] = final_template["system_message"].replace(
-                "{{user}}", final_template["user_name_prefix"]
-            )
-
-            final_template["sys_template"] = "<|system-message|>\n\n"
-            final_template["turn_template"] = character_template
-            final_template["bot_name_prefix"] = chat_preset["name"] + ":"
-
+        def get_preset(chat_preset, template_type):
+            if template_type == "presets/Characters":
+                character_template = (
+                    "<|user|>: <|user-message|>\n<|bot|>: <|bot-message|>\n"
+                )
+                final_template["user_name_prefix"] = f"{self.usernameLine.text()}:"
+                final_template["system_message"] = (
+                    f"Name: {chat_preset['name']}\n\n"
+                    f"Persona: {chat_preset['persona']}\n\n"
+                    f"Scenario: {chat_preset['scenario'].strip()}\n\n"
+                    f"Tags: {chat_preset['tags']}"
+                )
+                final_template["system_message"] = final_template[
+                    "system_message"
+                ].replace("{user}", final_template["user_name_prefix"])
+                final_template["sys_template"] = "<|system-message|>\n\n"
+                final_template["turn_template"] = character_template
+                final_template["bot_name_prefix"] = chat_preset["name"] + ":"
+            else:
+                final_template["sys_template"] = chat_preset["context"]
+                final_template["turn_template"] = chat_preset["turn_template"]
+                final_template["user_name_prefix"] = chat_preset["user"]
+                final_template["bot_name_prefix"] = chat_preset["bot"]
+                final_template["system_message"] = chat_preset["system_message"]
             return final_template
 
-        def get_assistant_preset():
-            final_template["sys_template"] = chat_preset["context"]
-            final_template["turn_template"] = chat_preset["turn_template"]
-            final_template["user_name_prefix"] = chat_preset["user"]
-            final_template["bot_name_prefix"] = chat_preset["bot"]
-            final_template["system_message"] = chat_preset["system_message"]
-
-            return final_template
-
-        if contact_mode == "presets/Characters":
-            final_template = get_char_preset()
-        else:
-            final_template = get_assistant_preset()
+        final_template = get_preset(chat_preset, contact_mode)
 
         return final_template
 
@@ -754,7 +776,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             self.final_prompt_template = self.get_chat_presets()
 
     def update_context_char(self):
-        self.final_prompt_template["user_name_prefix"] = self.usernameLine.text() + ":"
+        self.final_prompt_template["user_name_prefix"] = f"{self.usernameLine.text()}:"
         self.final_prompt_template["sys_template"]
 
     def update_context(self):
@@ -782,7 +804,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         updated_context = "".join(
             [
                 (user_prompt.replace("<|user-message|>", user_msg))
-                + (str(bot_msg) + bot_prompt)
+                + f"{str(bot_msg)}{bot_prompt}"
                 for user_msg, bot_msg in zip(
                     self.session_dict[self.bot_name]["user_msgs"],
                     self.session_dict[self.bot_name]["bot_msgs"],
@@ -1000,14 +1022,14 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         if theme == "dark":
             apply_stylesheet(
                 app,
-                theme="dark_amber.xml",
+                theme="dark_blue.xml",
                 css_file="assets/dark_theme.css",
                 extra=extra,
             )
         if theme == "light":
             apply_stylesheet(
                 app,
-                theme="light_amber.xml",
+                theme="light_blue.xml",
                 css_file="assets/light_theme.css",
                 extra=extra,
                 invert_secondary=True,
