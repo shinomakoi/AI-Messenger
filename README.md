@@ -1,6 +1,14 @@
 # AI-Messenger
 
-QT GUI for large language models
+QT GUI for large language models, for Windows, Linux and Mac.
+
+Features:
+- LLama.cpp and Exllama V2 as backends
+- LLaVA multimodal support
+- Chat, completion, notebook modes
+- Model paramater presets
+- Instruct presets + V2 Tavern character cards
+- Save chat sessions
 
 Uses LLaMA.cpp and ExLLaMA V2 as backends.
 
@@ -29,7 +37,7 @@ To use the LLaMA.cpp backend run the server in the LLaMA.cpp directory, e.g.:
 ```
 **ExLLaMA V2**
 
-To use the ExLLaMa backend run ```ws-server.py --model "model_path"``` in the ExLLaMA directory
+To use the ExLLaMa backend run ```python examples/ws-server.py --model "model_path"``` in the ExLLaMA directory
 
 **Usage:**
 
