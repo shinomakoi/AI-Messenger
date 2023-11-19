@@ -29,7 +29,7 @@ To use the LLaMA.cpp backend run the server in the LLaMA.cpp directory, e.g.:
 ```
 **ExLLaMA V2**
 
-To use the ExLLaMa backend run ```ws-server.py``` in the ExLLaMA directory
+To use the ExLLaMa backend run ```ws-server.py --model "model_path"``` in the ExLLaMA directory
 
 **Usage:**
 
