@@ -127,7 +127,6 @@ class SettingsManager:
                 "system_prompt": ui.customSysPromptText.toPlainText(),
                 "auto_save_session": ui.autoSaveSessionCheck.isChecked(),
                 "auto_add_stopstring": ui.stopStringAutoCheck.isChecked(),
-                "bos_id": ui.bosIdText.text(),
                 "backend": "exllamav2"
                 if ui.backendExllamaCheck.isChecked()
                 else "llama.cpp",
@@ -168,7 +167,6 @@ class SettingsManager:
         ui.botnameLine.setText(prefs["bot_name"])
         ui.custStopStringLine.setText(prefs["stop_strings"])
         ui.customSysPromptCheck.setChecked(prefs["system_prompt_check"])
-        ui.bosIdText.setText(prefs["bos_id"])
         ui.customSysPromptText.setPlainText(prefs["system_prompt"])
         ui.autoSaveSessionCheck.setChecked(prefs["auto_save_session"])
         ui.stopStringAutoCheck.setChecked(prefs["auto_add_stopstring"])
@@ -354,7 +352,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.inputText = InputTextEdit(self)
         self.inputText.setObjectName("inputText")
         self.inputText.setMaximumSize(QSize(16777215, 100))
-        self.gridLayout.addWidget(self.inputText, 2, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.inputText, 2, 0, 1, 1)
 
     def set_window_icon(self):
         icon = QIcon()
@@ -394,7 +392,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.inputHistoryCombo.activated.connect(self.set_chat_input_history)
         self.paramPresets_comboBox.activated.connect(self.apply_params_preset)
         self.contactsTree.itemDoubleClicked.connect(self.manage_contacts)
-        self.leftToolbox.currentChanged.connect(self.manage_page_mode)
+        self.textTabWidget.currentChanged.connect(self.manage_page_mode)
 
         # Connect sliders to their respective spin boxes and vice versa
         self.connect_slider_spinbox(self.temperatureSlider, self.temperatureSpin)
@@ -480,8 +478,8 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.mirostatEta.setValue(float(param_preset_name["mirostat_eta"]))
 
     def get_toolbox_index(self):
-        # Get current index from leftToolbox, return None if leftToolbox is None
-        return self.leftToolbox.currentIndex() if self.leftToolbox else None
+        # Get current index from textTabWidget, return None if textTabWidget is None
+        return self.textTabWidget.currentIndex() if self.textTabWidget else None
 
     def manage_contacts(self, contact):
         # If a contact is provided, get related info and set window title
@@ -496,7 +494,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             if self.contact_parent == "Cards":
                 self.get_template(True)
                 if not self.session_dict[self.bot_name]["context"]:
-                    self.outputText.setMarkdown(
+                    self.chatTextEdit.setMarkdown(
                         self.final_prompt_template["display_text"]
                     )
             else:
@@ -506,57 +504,25 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 self.button_manager(False, False)
             else:
                 self.button_manager(True, True)
-            self.outputText.setPlaceholderText(contact.text(0))
+            self.chatTextEdit.setPlaceholderText(contact.text(0))
 
-    def manage_page_mode(self):
-        toolbox_index = self.get_toolbox_index()
-
+    def manage_page_mode(self, tab_index):
         # Check the value of toolbox and update page mode accordingly
-        self.page_mode = (
-            "Chat"
-            if toolbox_index == 0
-            else "Simple"
-            if toolbox_index == 1
-            else "Notebook"
-        )
-
-        self.button_manager(True, False)
-        self.stopButton.setEnabled(toolbox_index != 2)
-
-        # Update whether text output and input are enabled based on notebook value
-        self.outputText.setReadOnly(
-            toolbox_index != 2 if toolbox_index is not None else False
-        )
-        self.inputText.setEnabled(
-            toolbox_index != 2 if toolbox_index is not None else False
-        )
-
-        if not (self.generateButton.isEnabled() and bool(self.textgenThread)):
-            self.generateButton.setEnabled(True)  # Enable generate button as needed
-
-        if self.page_mode != "Chat":
-            self.outputText.clear()
-
-        self.stopButton.setEnabled(False)
+        self.inputText.setEnabled(tab_index != 1 if tab_index is not None else False)
 
     def launch_page_mode(self, btn=None, retry_textgen=False):
         if self.textgenThread:
             return
 
-        currentIndex = (
-            self.leftToolbox.currentIndex()
-        )  # Store the index in a variable for readability
+        currentIndex = self.textTabWidget.currentIndex()
+        self.page_mode = "Chat" if currentIndex == 0 else "Notebook"
 
         user_input = retry_textgen or self.inputText.toPlainText().strip()
 
-        if currentIndex == 0 and user_input:
+        if currentIndex == 0 and user_input and self.session_dict:
             self.text_chat_mode(user_input)
-        elif currentIndex == 1 and user_input:
-            self.text_nonchat_mode("Simple", user_input)
-        elif currentIndex == 2:
-            notebook_text = self.outputText.toPlainText()
-            if notebook_text:
-                self.text_nonchat_mode("Notebook", notebook_text)
+        elif currentIndex == 1 and self.notebookTextEdit.toPlainText():
+            self.text_notebook_mode(self.notebookTextEdit.toPlainText())
 
     def text_chat_mode(self, user_input):
         self.add_chat_messages("user_msgs", user_input)
@@ -568,14 +534,8 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.session_dict[self.bot_name]["bot_msgs"].pop()
         self.add_chat_input_history(user_input)
 
-    def text_nonchat_mode(self, bot_name, user_input):
-        self.bot_name = bot_name
-        self.user_name_prefix = None
-        self.session_dict[bot_name] = {"context": user_input}
-        self.outputText.clear() if bot_name == "Simple" else self.outputText.setMarkdown(
-            user_input
-        )  # Clear outputText for Simple mode, display text otherwise
-        self.inputText.clear()
+    def text_notebook_mode(self, user_input):
+        self.prev_notebook_text = user_input
         self.launch_backend()
 
     # Define a helper function to get the directory path from a dialog
@@ -656,7 +616,9 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         if self.page_mode == "Chat":
             self.write_history_file(SESSION_FILE)
             self.history_reset()
-        self.outputText.clear()
+            self.chatTextEdit.clear()
+        else:
+            self.notebookTextEdit.clear()
         self.button_manager(True, True)
 
     def history_display(self, first_launch):
@@ -687,8 +649,8 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             "bot_msgs": [],
             "context": "",
         }
-        if self.outputText.toPlainText():
-            self.outputText.clear()
+        if self.chatTextEdit.toPlainText():
+            self.chatTextEdit.clear()
             self.generateButton.setEnabled(True)
 
     def chat_display(self):
@@ -717,12 +679,12 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
 """
         # Clear the output text field and append the display text
-        self.outputText.clear()
+        self.chatTextEdit.clear()
         display_text = (
             display_text.replace("</s>", "").replace("<START>", "").replace("<END>", "")
         )
-        self.outputText.setMarkdown(display_text.strip())
-        self.outputText.append("")
+        self.chatTextEdit.setMarkdown(display_text.strip())
+        self.chatTextEdit.append("")
         self.scroll_to_bottom()
 
     def get_chat_presets(self):
@@ -842,27 +804,25 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.chat_display()
 
     def retry_launcher(self):
-        if self.leftToolbox.currentIndex() == 0:
+        if self.textTabWidget.currentIndex() == 0:
             self.retry_textgen_chat()
         else:
-            self.retry_textgen_nonchat()
+            self.retry_textgen_notebook()
 
     def retry_textgen_chat(self):
         last_user_msg = self.session_dict[self.bot_name]["user_msgs"][-1]
         self.rewind_history()
         self.launch_page_mode(None, last_user_msg)
 
-    def retry_textgen_nonchat(self):
-        self.outputText.setMarkdown(self.session_dict[self.bot_name]["context"])
+    def retry_textgen_notebook(self):
+        self.notebookTextEdit.clear()
+        self.notebookTextEdit.setPlainText(self.prev_notebook_text)
         self.launch_backend()
 
     def continue_launcher(self):
-        if self.leftToolbox.currentIndex() == 0:
+        if self.textTabWidget.currentIndex() == 0:
             self.continue_chat = True
-            self.launch_backend()
-        else:
-            self.session_dict[self.bot_name]["context"] = self.outputText.toPlainText()
-            self.launch_backend()
+        self.launch_backend()
 
     # Stop button logic
     def stop_textgen(self):
@@ -901,6 +861,12 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         return image_data
 
     def get_llama_cpp_params(self):
+        prompt = (
+            self.session_dict[self.bot_name]["context"]
+            if self.page_mode == "Chat"
+            else self.notebookTextEdit.toPlainText()
+        )
+
         image_data = (
             self.get_image()
             if self.imgFileLine.text() and Path(self.imgFileLine.text()).exists()
@@ -921,11 +887,6 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             self.custStopStringLine.text().split(", ")
             if self.custStopStringLine.text()
             else []
-        )
-        prompt = (
-            [2, self.session_dict[self.bot_name]["context"]]
-            if self.bosIdText.text() and self.backendCppCheck.isChecked()
-            else self.session_dict[self.bot_name]["context"]
         )
 
         seed = (
@@ -963,22 +924,23 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         return cpp_params
 
     def scroll_to_bottom(self):
+        widget = (
+            self.chatTextEdit if self.page_mode == "Chat" else self.notebookTextEdit
+        )
+
         if self.autoscrollCheck.isChecked():
-            self.outputText.verticalScrollBar().setValue(
-                self.outputText.verticalScrollBar().maximum()
-            )
+            widget.verticalScrollBar().setValue(widget.verticalScrollBar().maximum())
 
     def display_text_nonstream(self, final_text):
-        if self.page_mode == "Notebook":
-            self.outputText.setMarkdown(
-                self.session_dict[self.bot_name]["context"] + final_text
-            )
-        else:
-            self.outputText.setMarkdown(final_text)
+        self.chatTextEdit.setMarkdown(self.prev_notebook_text + final_text)
 
     @Slot(str)
     def handle_result(self, text):
-        cursor = self.outputText.textCursor()
+        cursor = (
+            self.chatTextEdit.textCursor()
+            if self.page_mode == "Chat"
+            else self.notebookTextEdit.textCursor()
+        )
         cursor.movePosition(QTextCursor.End)  # Move it to the end
         text = text.replace(" ", "&nbsp;").replace("\n", "<br />")
         cursor.insertMarkdown(text)
