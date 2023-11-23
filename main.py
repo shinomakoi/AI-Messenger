@@ -1,30 +1,29 @@
+import asyncio
+import base64
+import glob
+import json
+import platform
+import random
 import sys
+from pathlib import Path
+
+from PIL import Image
+from PySide6.QtCore import QSize, Qt, QThread, Signal, Slot
+from PySide6.QtGui import QIcon, QTextCursor
 from PySide6.QtWidgets import (
     QApplication,
-    QMainWindow,
-    QTreeWidgetItem,
     QFileDialog,
+    QMainWindow,
     QPlainTextEdit,
+    QTreeWidgetItem,
     QWidget,
 )
-from PySide6.QtCore import QThread, Signal, Slot, QSize
-from pathlib import Path
-from PySide6.QtGui import QIcon, QTextCursor
-from PySide6.QtCore import Qt
-
 from qt_material import apply_stylesheet
-import glob
-import base64
-import platform
-import asyncio
-import json
-import random
-
-from chat_window import Ui_ChatWindow
-from character_window import Ui_CharacterForm
 
 import cpp_server_gen
 import exllamav2_server_gen
+from character_window import Ui_CharacterForm
+from chat_window import Ui_ChatWindow
 
 # Constants for the directories and file names
 APP_ICON = Path("assets/icons/appicon.png")
@@ -51,12 +50,8 @@ class CharacterWindow(QWidget, Ui_CharacterForm):
 
         turn_template = self.get_turn_template()
         char_dict = self.get_character_data(turn_template)
-
-        try:
-            self.write_to_file(char_dict)
-            print("--- Saved character file")
-        except Exception as e:
-            print(f"--- Error saving character file: {str(e)}")
+        self.write_to_file(char_dict)
+        print("--- Saved character file")
 
     def set_window_icon(self):
         icon = QIcon()
@@ -85,7 +80,7 @@ class CharacterWindow(QWidget, Ui_CharacterForm):
 
     def write_to_file(self, char_dict):
         file_name = f"{CHARACTER_PRESETS_DIR}/{self.charName.text()}.json"
-        with open(file_name, "w") as file:
+        with open(file_name, "w", encoding="utf-8") as file:
             json.dump(char_dict, file)
 
 
@@ -140,24 +135,25 @@ class SettingsManager:
             },
         }
         try:
-            with open(SETTINGS_FILE, "w") as file:
+            with open(SETTINGS_FILE, "w", encoding="utf-8") as file:
                 json.dump(settings, file)
             print("--- Saved settings")
-        except Exception as error:
+        except FileNotFoundError as error:
             print(f"--- Could not save settings:\n{error}")
 
     def load_settings(self, ui):
         try:
-            with open(SETTINGS_FILE, "r") as file:
+            with open(
+                SETTINGS_FILE,
+                "r",
+                encoding="utf-8",
+            ) as file:
                 settings = json.load(file)
                 self._update_ui(ui, settings)
                 print("--- Loaded settings")
         except FileNotFoundError:
-            print("Settings file not found.")
+            print("--- Could not load settings")
             ui.set_themes("dark")
-
-        except Exception as error:
-            print(f"--- Could not load settings:\n{error}")
 
     def _update_ui(self, ui, settings):
         prefs = settings["prefs"]
@@ -192,13 +188,13 @@ class SettingsManager:
 
 
 class CharacterCard:
+    """Get character card"""
+
     def __init__(self):
         pass
 
     def get_card_data(self, card_file, user_name):
         try:
-            from PIL import Image
-
             print("--- Reading character card...")
             img = Image.open(f"{CARDS_PRESETS_DIR}/{card_file}.png")
             exif_data = img.info
@@ -232,7 +228,7 @@ class CharacterCard:
             f"{scenario if result['scenario'].strip() else ''}"
             f"Tags: {', '.join(result['tags']) if 'tags' in result else ''}\n\n"
             f"{result['mes_example'] if result['mes_example'].strip() else ''}\n\n"
-            f"{result['first_mes']}"
+            f"{result['first_mes']}\n\n"
         )
 
         def replace_placeholders(message):
@@ -254,7 +250,7 @@ class CharacterCard:
         return template
 
 
-class TextGenThread(QThread):
+class text_gen_thread(QThread):
     final_resultReady = Signal(bool, list)
     resultReady = Signal(str)
 
@@ -283,6 +279,7 @@ class TextGenThread(QThread):
 
     def _generate_with_streaming(self):
         final_text = ""
+        response = ""
         for response in cpp_server_gen.generate_with_streaming(self.params):
             if self.stop_flag:
                 break
@@ -305,6 +302,7 @@ class TextGenThread(QThread):
     def _exllamav2_streaming(self):
         async def get_response():
             final_text = ""
+            response = ""
             async for response in exllamav2_server_gen.generate_streaming(self.params):
                 if self.stop_flag:
                     break
@@ -343,10 +341,14 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.settings_manager.load_settings(self)
         self.apply_params_preset()
         self.connect_signals()
+
         self.session_dict = {}
         self.bot_prompt = ""
         self.chat_input_history = []
-        self.textgenThread = None
+        self.text_gen_thread = None
+        self.page_mode = "Chat"
+        self.continue_chat = False
+        self.final_prompt_template = {}
 
         # Add custom text input class
         self.inputText = InputTextEdit(self)
@@ -368,7 +370,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
     def connect_signals(self):
         # Connect buttons to their respective functions
         self.generateButton.clicked.connect(self.launch_page_mode)
-        self.actionAbout.triggered.connect(app.aboutQt)
+        self.actionAbout.triggered.connect(QApplication.aboutQt)
         self.actionSave_settings.triggered.connect(
             lambda: self.settings_manager.save_settings(self)
         )
@@ -423,14 +425,13 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
         self.contactsTree.headerItem().setText(0, "Contacts")
 
-        self.add_contacts(0, INSTRUCT_PRESETS_DIR)
-        self.add_contacts(1, CHARACTER_PRESETS_DIR)
-        self.add_contacts(2, CARDS_PRESETS_DIR)
+        self.add_contacts(0, INSTRUCT_PRESETS_DIR, "json")
+        self.add_contacts(1, CHARACTER_PRESETS_DIR, "json")
+        self.add_contacts(2, CARDS_PRESETS_DIR, "png")
 
         self.contactsTree.expandAll()
 
-    def add_contacts(self, chat_mode_index, directory):
-        file_extension = "json" if chat_mode_index < 2 else "png"
+    def add_contacts(self, chat_mode_index, directory, file_extension):
         presets = [
             preset
             for preset in glob.glob(f"{directory}/*.{file_extension}")
@@ -457,7 +458,11 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         current_preset = self.paramPresets_comboBox.currentText()
         preset_file = f"{PARAMS_DIR}/{current_preset}.settings"
 
-        with open(preset_file, "r") as file:
+        with open(
+            preset_file,
+            "r",
+            encoding="utf-8",
+        ) as file:
             param_preset_name = json.load(file)
 
         # Set the values of the spin boxes and sliders according to the parameters
@@ -484,19 +489,13 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
     def manage_contacts(self, contact):
         # If a contact is provided, get related info and set window title
         if contact.parent():
-            self.page_mode = "Chat"
-            self.continue_chat = False
-            self.final_prompt_template = {}
             self.bot_name = contact.text(0)
             self.contact_parent = contact.parent().text(0) if contact.parent() else None
             self.history_display(not bool(self.session_dict.get(contact.text(0))))
 
             if self.contact_parent == "Cards":
                 self.get_template(True)
-                if not self.session_dict[self.bot_name]["context"]:
-                    self.chatTextEdit.setMarkdown(
-                        self.final_prompt_template["display_text"]
-                    )
+
             else:
                 self.get_template(False)
             self.generateButton.setEnabled(True)
@@ -504,29 +503,38 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 self.button_manager(False, False)
             else:
                 self.button_manager(True, True)
-            self.chatTextEdit.setPlaceholderText(contact.text(0))
+                self.display_sys_prompt()
+
+            self.setWindowTitle(f"AI Messenger - {contact.text(0)}")
+
+            # Display system prompt
 
     def manage_page_mode(self, tab_index):
         # Check the value of toolbox and update page mode accordingly
         self.inputText.setEnabled(tab_index != 1 if tab_index is not None else False)
 
-    def launch_page_mode(self, btn=None, retry_textgen=False):
-        if self.textgenThread:
+    def launch_page_mode(self, retry_textgen=None):
+        if self.text_gen_thread:
             return
 
-        currentIndex = self.textTabWidget.currentIndex()
-        self.page_mode = "Chat" if currentIndex == 0 else "Notebook"
+        self.page_mode = (
+            "Chat" if self.textTabWidget.currentIndex() == 0 else "Notebook"
+        )
 
-        user_input = retry_textgen or self.inputText.toPlainText().strip()
+        user_input = (
+            (retry_textgen or self.inputText.toPlainText().strip())
+            if self.page_mode == "Chat"
+            else self.notebookTextEdit.toPlainText()
+        )
 
-        if currentIndex == 0 and user_input and self.session_dict:
+        if self.page_mode == "Chat" and user_input and self.session_dict:
             self.text_chat_mode(user_input)
-        elif currentIndex == 1 and self.notebookTextEdit.toPlainText():
-            self.text_notebook_mode(self.notebookTextEdit.toPlainText())
+        elif self.page_mode == "Notebook" and user_input:
+            self.text_notebook_mode(user_input)
 
     def text_chat_mode(self, user_input):
         self.add_chat_messages("user_msgs", user_input)
-        self.add_chat_messages("bot_msgs", "")  # Placeholder
+        self.add_chat_messages("bot_msgs", "")
         self.update_context()
         self.chat_display()
         self.inputText.clear()
@@ -539,7 +547,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.launch_backend()
 
     # Define a helper function to get the directory path from a dialog
-    def save_session(self, title):
+    def save_session(self):
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(
@@ -587,23 +595,28 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         status = "Generating..." if generation_enabled else f"Completed{info_message}"
         self.status_bar_msg(f"Status: {status}")
 
-    def button_manager(self, enable_mode, clear):
+    def button_manager(self, enable_mode, clear=False):
         inverted_button_state = not enable_mode
-
         buttons = [
             self.continueButton,
             self.clearButton,
             self.rewindButton,
             self.retryButton,
         ]
-
         for button in buttons:
-            button.setEnabled(
-                inverted_button_state
-            )  # Enable/disable all the buttons based on mode
+            button.setEnabled(inverted_button_state)
         if not clear:
             self.stopButton.setEnabled(enable_mode)
             self.generateButton.setEnabled(inverted_button_state)
+
+    def display_sys_prompt(self):
+        display_text = (
+            self.customSysPromptText.toPlainText()
+            if self.customSysPromptCheck.isChecked()
+            else self.final_prompt_template["display_text"]
+        )
+
+        self.chatTextEdit.setMarkdown(display_text)
 
     def history_reset(self):
         self.session_dict[self.bot_name] = {
@@ -613,15 +626,16 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         }
 
     def history_clear(self):
+        self.write_history_file(SESSION_FILE, manual=True)
+        self.history_reset()
         if self.page_mode == "Chat":
-            self.write_history_file(SESSION_FILE)
-            self.history_reset()
             self.chatTextEdit.clear()
         else:
             self.notebookTextEdit.clear()
         self.button_manager(True, True)
+        self.display_sys_prompt()
 
-    def history_display(self, first_launch):
+    def history_display(self, first_launch=False):
         if first_launch:
             self.load_history_file()
             if self.bot_name not in self.session_dict:
@@ -630,15 +644,14 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     def write_history_file(self, file_name, manual=False):
         if self.autoSaveSessionCheck.isChecked() or manual:
-            # Write to .json
             session_history = dict(self.session_dict)
-            with open(file_name, "w") as file:
+            with open(file_name, "w", encoding="utf-8") as file:
                 json.dump(session_history, file)
 
     def load_history_file(self):
         if Path(SESSION_FILE).exists():
             print("--- Loading session history file")
-            with open(SESSION_FILE, "r") as file:
+            with open(SESSION_FILE, "r", encoding="utf-8") as file:
                 session_history = json.load(file)
                 if self.bot_name in session_history:
                     self.session_dict = session_history
@@ -654,21 +667,24 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             self.generateButton.setEnabled(True)
 
     def chat_display(self):
-        if self.botnameLine.text():
-            bot_display_name = self.botnameLine.text()
-        elif self.contact_parent != "Assistants":
-            bot_display_name = self.bot_name
-        else:
-            bot_display_name = self.botnameLine.placeholderText()
+        bot_display_name = self.get_bot_display_name()
+        display_text = self.get_display_text(bot_display_name)
+        self.update_chat_text_edit(display_text)
 
+    def get_bot_display_name(self):
+        if self.botnameLine.text():
+            return self.botnameLine.text()
+        elif self.contact_parent != "Assistants":
+            return self.bot_name
+        else:
+            return self.botnameLine.placeholderText()
+
+    def get_display_text(self, bot_display_name):
         display_text = ""
-        # Iterate over user and bot messages and append them to the display text
         for user_msg, bot_msg in zip(
             self.session_dict[self.bot_name]["user_msgs"],
             self.session_dict[self.bot_name]["bot_msgs"],
         ):
-            # user_msg=user_msg.replace("\n", "<br />")
-            # bot_msg=bot_msg.replace("\n", "<br />")
             display_text += f"""**<span style="color:#a92828">{self.usernameLine.text()}</span>**
 
 {user_msg}
@@ -678,13 +694,18 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 {bot_msg}
 
 """
-        # Clear the output text field and append the display text
-        self.chatTextEdit.clear()
-        display_text = (
-            display_text.replace("</s>", "").replace("<START>", "").replace("<END>", "")
+        return (
+            display_text
+            # .replace("\n", "<br />")
+            .replace("<START>", "")
+            .replace("<END>", "")
         )
+
+    def update_chat_text_edit(self, display_text):
+        self.chatTextEdit.clear()
         self.chatTextEdit.setMarkdown(display_text.strip())
-        self.chatTextEdit.append("")
+        if self.bot_name != "\n\n":
+            self.chatTextEdit.append("")
         self.scroll_to_bottom()
 
     def get_chat_presets(self):
@@ -695,8 +716,10 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
         final_template = {}
 
-        with open(f"{contact_mode}/{self.bot_name}.json", "r") as file:
-            print("--- Getting chat preset...")
+        with open(
+            f"{contact_mode}/{self.bot_name}.json", "r", encoding="utf-8"
+        ) as file:
+            # print("--- Getting chat preset...")
             chat_preset = json.load(file)
 
         def get_preset(chat_preset, template_type):
@@ -710,19 +733,24 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                     f"Persona: {chat_preset['persona']}\n\n"
                     f"Scenario: {chat_preset['scenario'].strip()}\n\n"
                     f"Tags: {chat_preset['tags']}"
+                    f"{chat_preset['example_dialog']}"
                 )
                 final_template["system_message"] = final_template[
                     "system_message"
-                ].replace("{user}", final_template["user_name_prefix"])
+                ].replace("{{user}}", final_template["user_name_prefix"])
                 final_template["sys_template"] = "<|system-message|>\n\n"
                 final_template["turn_template"] = character_template
-                final_template["bot_name_prefix"] = chat_preset["name"] + ":"
+                final_template["bot_name_prefix"] = chat_preset["name"]
+                final_template["display_text"] = str(
+                    chat_preset["example_dialog"]
+                ).replace("{{user}}", final_template["user_name_prefix"])
             else:
                 final_template["sys_template"] = chat_preset["context"]
                 final_template["turn_template"] = chat_preset["turn_template"]
                 final_template["user_name_prefix"] = chat_preset["user"]
                 final_template["bot_name_prefix"] = chat_preset["bot"]
                 final_template["system_message"] = chat_preset["system_message"]
+                final_template["display_text"] = chat_preset["system_message"]
             return final_template
 
         final_template = get_preset(chat_preset, contact_mode)
@@ -737,36 +765,27 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         else:
             self.final_prompt_template = self.get_chat_presets()
 
-    def update_context_char(self):
-        self.final_prompt_template["user_name_prefix"] = f"{self.usernameLine.text()}:"
-        self.final_prompt_template["sys_template"]
-
     def update_context(self):
         self.final_prompt_template["system_message"] = (
             self.customSysPromptText.toPlainText()
             if self.customSysPromptCheck.isChecked()
             else self.final_prompt_template["system_message"]
         )
-
         self.final_prompt_template["sys_template"] = self.final_prompt_template[
             "sys_template"
         ].replace("<|system-message|>", self.final_prompt_template["system_message"])
-
-        self.user_name_prefix = self.final_prompt_template["user_name_prefix"].strip()
-
-        user_template, bot_prompt = self.final_prompt_template["turn_template"].split(
-            "<|bot-message|>"
-        )
-
+        user_template, self.bot_prompt = self.final_prompt_template[
+            "turn_template"
+        ].split("<|bot-message|>")
         user_prompt = user_template.replace(
             "<|user|>", self.final_prompt_template["user_name_prefix"]
         ).replace("<|bot|>", self.final_prompt_template["bot_name_prefix"])
 
-        self.bot_prompt = bot_prompt
         updated_context = "".join(
             [
                 (user_prompt.replace("<|user-message|>", user_msg))
-                + f"{str(bot_msg)}{bot_prompt}"
+                + str(bot_msg)
+                + self.bot_prompt
                 for user_msg, bot_msg in zip(
                     self.session_dict[self.bot_name]["user_msgs"],
                     self.session_dict[self.bot_name]["bot_msgs"],
@@ -776,10 +795,12 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
         self.session_dict[self.bot_name]["context"] = (
             self.final_prompt_template["sys_template"] + updated_context
-        ).strip()
+        )
 
         if self.contact_parent == "Characters":
-            self.update_context_char()
+            self.final_prompt_template[
+                "user_name_prefix"
+            ] = f"{self.usernameLine.text()}:"
 
     def rewind_history(self):
         if not self.page_mode == "Chat":
@@ -812,7 +833,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
     def retry_textgen_chat(self):
         last_user_msg = self.session_dict[self.bot_name]["user_msgs"][-1]
         self.rewind_history()
-        self.launch_page_mode(None, last_user_msg)
+        self.launch_page_mode(last_user_msg)
 
     def retry_textgen_notebook(self):
         self.notebookTextEdit.clear()
@@ -826,7 +847,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     # Stop button logic
     def stop_textgen(self):
-        self.textgenThread.stop()
+        self.text_gen_thread.stop()
 
     def launch_backend(self):
         # Add user message to session dictionary only if not empty
@@ -835,13 +856,13 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         cpp_params = self.get_llama_cpp_params()
         backend = "exllamav2" if self.backendExllamaCheck.isChecked() else "llama.cpp"
         # Start text generation thread and connect signals to slots
-        self.textgenThread = TextGenThread(cpp_params, backend)
-        self.textgenThread.resultReady.connect(self.handle_result)
-        self.textgenThread.final_resultReady.connect(self.handle_final_result)
-        self.textgenThread.finished.connect(self.textgenThread.deleteLater)
+        self.text_gen_thread = text_gen_thread(cpp_params, backend)
+        self.text_gen_thread.resultReady.connect(self.handle_result)
+        self.text_gen_thread.final_resultReady.connect(self.handle_final_result)
+        self.text_gen_thread.finished.connect(self.text_gen_thread.deleteLater)
 
         # Start the thread
-        self.textgenThread.start()
+        self.text_gen_thread.start()
 
     def add_chat_messages(self, mode, message):
         self.session_dict[self.bot_name][mode].append(message)
@@ -874,10 +895,11 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         )
         stop_strings = (
             [
-                self.user_name_prefix,
-                f"\n{self.user_name_prefix[:-1]}",
+                self.final_prompt_template["user_name_prefix"],
+                f"\n{self.final_prompt_template['user_name_prefix'][:-1]}",
+                self.final_prompt_template["bot_name_prefix"],
                 "\n:",
-                "<START>",
+                # "<START>",
                 "<END>",
             ]
             if self.stopStringAutoCheck.isChecked() and self.page_mode == "Chat"
@@ -927,44 +949,38 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         widget = (
             self.chatTextEdit if self.page_mode == "Chat" else self.notebookTextEdit
         )
-
         if self.autoscrollCheck.isChecked():
             widget.verticalScrollBar().setValue(widget.verticalScrollBar().maximum())
 
     def display_text_nonstream(self, final_text):
-        self.chatTextEdit.setMarkdown(self.prev_notebook_text + final_text)
+        self.chatTextEdit.append(self.prev_notebook_text + final_text)
 
-    @Slot(str)
     def handle_result(self, text):
         cursor = (
             self.chatTextEdit.textCursor()
             if self.page_mode == "Chat"
             else self.notebookTextEdit.textCursor()
         )
-        cursor.movePosition(QTextCursor.End)  # Move it to the end
+        cursor.movePosition(QTextCursor.End)
         text = text.replace(" ", "&nbsp;").replace("\n", "<br />")
         cursor.insertMarkdown(text)
         self.scroll_to_bottom()
 
     def handle_final_result(self, success, final_result):
         if not success:
-            # If only FALSE is returned from failure
             self.status_bar_msg("Error: Generation failed...")
         else:
             self.update_generation_status(False, final_result[1])
             final_text = final_result[0]
-
             if self.page_mode == "Chat":
                 self._handle_result_chat(final_text)
-            elif (
-                not self.stream and not self.session_dict[self.bot_name]["user_msgs"]
-            ):  # If not chat and stream disabled
+            elif not self.stream and not self.session_dict[self.bot_name]["user_msgs"]:
                 self.display_text_nonstream(final_text)
             # print("---" + self.session_dict[self.bot_name]["context"] + "---")
 
         self.button_manager(False, False)
-        self.textgenThread = None
-        app.alert(self.centralwidget)
+        self.text_gen_thread = None
+        QApplication.alert(self.centralwidget)
 
     def _handle_result_chat(self, final_text):
         if self.continue_chat:

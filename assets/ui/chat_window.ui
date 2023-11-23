@@ -124,7 +124,7 @@
           <x>0</x>
           <y>0</y>
           <width>256</width>
-          <height>796</height>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -420,8 +420,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>219</width>
-          <height>601</height>
+          <width>256</width>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -786,8 +786,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>155</width>
-          <height>536</height>
+          <width>256</width>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -950,8 +950,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>191</width>
-          <height>430</height>
+          <width>256</width>
+          <height>831</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1234,7 +1234,7 @@
      <x>0</x>
      <y>0</y>
      <width>1582</width>
-     <height>27</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1243,9 +1243,10 @@
     </property>
     <addaction name="actionReload_contacts"/>
     <addaction name="separator"/>
-    <addaction name="actionSave_settings"/>
     <addaction name="actionSave_session"/>
+    <addaction name="actionLoad_session"/>
     <addaction name="separator"/>
+    <addaction name="actionSave_settings"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -1298,6 +1299,11 @@
   <action name="actionCharacter">
    <property name="text">
     <string>Character</string>
+   </property>
+  </action>
+  <action name="actionLoad_session">
+   <property name="text">
+    <string>Load session</string>
    </property>
   </action>
  </widget>
