@@ -50,6 +50,6 @@ python main.py
 
 Place V2 character cards (such as from Chub.ai) in the presets/Cards directory
 
-![image](https://github.com/shinomakoi/AI-Messenger/assets/112139428/3cbc7185-80b6-4241-8e3e-6cd3c123a534)
+![image](https://github.com/shinomakoi/AI-Messenger/assets/112139428/1442c63e-5607-4d7a-be9c-b7259e8c1c1d)
 
 Uses https://github.com/UN-GCPDS/qt-material for themes
