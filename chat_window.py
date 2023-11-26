@@ -22,8 +22,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComb
     QMenu, QMenuBar, QPlainTextEdit, QPushButton,
     QRadioButton, QSizePolicy, QSlider, QSpacerItem,
     QSpinBox, QSplitter, QStatusBar, QTabWidget,
-    QTextEdit, QToolBox, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget)
+    QTextEdit, QToolBox, QToolButton, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_ChatWindow(object):
     def setupUi(self, ChatWindow):
@@ -541,6 +541,26 @@ class Ui_ChatWindow(object):
         self.themesPage.setGeometry(QRect(0, 0, 256, 831))
         self.gridLayout_7 = QGridLayout(self.themesPage)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.custStopStringLine = QLineEdit(self.themesPage)
+        self.custStopStringLine.setObjectName(u"custStopStringLine")
+
+        self.gridLayout_7.addWidget(self.custStopStringLine, 5, 0, 1, 1)
+
+        self.stopStringAutoCheck = QCheckBox(self.themesPage)
+        self.stopStringAutoCheck.setObjectName(u"stopStringAutoCheck")
+        self.stopStringAutoCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.stopStringAutoCheck, 1, 0, 1, 1)
+
+        self.label_13 = QLabel(self.themesPage)
+        self.label_13.setObjectName(u"label_13")
+
+        self.gridLayout_7.addWidget(self.label_13, 6, 0, 1, 1)
+
+        self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_7.addItem(self.verticalSpacer_5, 11, 0, 1, 1)
+
         self.penaliseNlCheck = QCheckBox(self.themesPage)
         self.penaliseNlCheck.setObjectName(u"penaliseNlCheck")
 
@@ -557,17 +577,6 @@ class Ui_ChatWindow(object):
 
         self.gridLayout_7.addWidget(self.autoSaveSessionCheck, 2, 0, 1, 1)
 
-        self.stopStringAutoCheck = QCheckBox(self.themesPage)
-        self.stopStringAutoCheck.setObjectName(u"stopStringAutoCheck")
-        self.stopStringAutoCheck.setChecked(True)
-
-        self.gridLayout_7.addWidget(self.stopStringAutoCheck, 1, 0, 1, 1)
-
-        self.custStopStringLine = QLineEdit(self.themesPage)
-        self.custStopStringLine.setObjectName(u"custStopStringLine")
-
-        self.gridLayout_7.addWidget(self.custStopStringLine, 5, 0, 1, 1)
-
         self.imgFileLine = QLineEdit(self.themesPage)
         self.imgFileLine.setObjectName(u"imgFileLine")
 
@@ -578,15 +587,6 @@ class Ui_ChatWindow(object):
         self.autoscrollCheck.setChecked(True)
 
         self.gridLayout_7.addWidget(self.autoscrollCheck, 0, 0, 1, 1)
-
-        self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout_7.addItem(self.verticalSpacer_5, 11, 0, 1, 1)
-
-        self.label_13 = QLabel(self.themesPage)
-        self.label_13.setObjectName(u"label_13")
-
-        self.gridLayout_7.addWidget(self.label_13, 6, 0, 1, 1)
 
         self.groupBox_2 = QGroupBox(self.themesPage)
         self.groupBox_2.setObjectName(u"groupBox_2")
@@ -610,6 +610,11 @@ class Ui_ChatWindow(object):
 
 
         self.gridLayout_7.addWidget(self.groupBox_2, 9, 0, 1, 1)
+
+        self.imgFileButton = QToolButton(self.themesPage)
+        self.imgFileButton.setObjectName(u"imgFileButton")
+
+        self.gridLayout_7.addWidget(self.imgFileButton, 7, 1, 1, 1)
 
         self.rightToolbox.addItem(self.themesPage, u"Preferences - More")
         self.splitter.addWidget(self.rightToolbox)
@@ -872,6 +877,15 @@ class Ui_ChatWindow(object):
         self.backendExllamaCheck.setText(QCoreApplication.translate("ChatWindow", u"ExLLaMA V2", None))
         self.rightToolbox.setItemText(self.rightToolbox.indexOf(self.preferencesPage), QCoreApplication.translate("ChatWindow", u"Preferences", None))
 #if QT_CONFIG(tooltip)
+        self.custStopStringLine.setToolTip(QCoreApplication.translate("ChatWindow", u"Comma separated list", None))
+#endif // QT_CONFIG(tooltip)
+        self.custStopStringLine.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"User, Bot", None))
+#if QT_CONFIG(tooltip)
+        self.stopStringAutoCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Auto add stop strings", None))
+#endif // QT_CONFIG(tooltip)
+        self.stopStringAutoCheck.setText(QCoreApplication.translate("ChatWindow", u"Auto add stop strings", None))
+        self.label_13.setText(QCoreApplication.translate("ChatWindow", u"LLaVA image:", None))
+#if QT_CONFIG(tooltip)
         self.penaliseNlCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Penalise newline tokens when applying the repeat penalty ", None))
 #endif // QT_CONFIG(tooltip)
         self.penaliseNlCheck.setText(QCoreApplication.translate("ChatWindow", u"Penalise newlines", None))
@@ -881,14 +895,6 @@ class Ui_ChatWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.autoSaveSessionCheck.setText(QCoreApplication.translate("ChatWindow", u"Auto save session", None))
 #if QT_CONFIG(tooltip)
-        self.stopStringAutoCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Auto add stop strings", None))
-#endif // QT_CONFIG(tooltip)
-        self.stopStringAutoCheck.setText(QCoreApplication.translate("ChatWindow", u"Auto add stop strings", None))
-#if QT_CONFIG(tooltip)
-        self.custStopStringLine.setToolTip(QCoreApplication.translate("ChatWindow", u"Comma separated list", None))
-#endif // QT_CONFIG(tooltip)
-        self.custStopStringLine.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"User, Bot", None))
-#if QT_CONFIG(tooltip)
         self.imgFileLine.setToolTip(QCoreApplication.translate("ChatWindow", u"Image for LLaVA (llama.cpp only)", None))
 #endif // QT_CONFIG(tooltip)
         self.imgFileLine.setText("")
@@ -897,11 +903,11 @@ class Ui_ChatWindow(object):
         self.autoscrollCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Autoscroll the output text when generating", None))
 #endif // QT_CONFIG(tooltip)
         self.autoscrollCheck.setText(QCoreApplication.translate("ChatWindow", u"Autoscroll", None))
-        self.label_13.setText(QCoreApplication.translate("ChatWindow", u"LLaVA image:", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ChatWindow", u"Theme", None))
         self.themeNativeRadio.setText(QCoreApplication.translate("ChatWindow", u"Native", None))
         self.themeDarkRadio.setText(QCoreApplication.translate("ChatWindow", u"Dark", None))
         self.themeLightRadio.setText(QCoreApplication.translate("ChatWindow", u"Light", None))
+        self.imgFileButton.setText(QCoreApplication.translate("ChatWindow", u"...", None))
         self.rightToolbox.setItemText(self.rightToolbox.indexOf(self.themesPage), QCoreApplication.translate("ChatWindow", u"Preferences - More", None))
 #if QT_CONFIG(tooltip)
         self.clearButton.setToolTip(QCoreApplication.translate("ChatWindow", u"Clear the output history", None))

@@ -349,6 +349,8 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.page_mode = "Chat"
         self.continue_chat = False
         self.final_prompt_template = {}
+        self.bot_name = None
+        self.contact_parent = None
 
         # Add custom text input class
         self.inputText = InputTextEdit(self)
@@ -382,6 +384,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         self.rewindButton.clicked.connect(self.rewind_history)
         self.retryButton.clicked.connect(self.retry_launcher)
         self.continueButton.clicked.connect(self.continue_launcher)
+        self.imgFileButton.clicked.connect(self.image_select)
 
         self.themeDarkRadio.clicked.connect(lambda: self.set_themes("dark"))
         self.themeLightRadio.clicked.connect(lambda: self.set_themes("light"))
@@ -389,6 +392,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
         self.actionExit.triggered.connect(self.close)
         self.actionSave_session.triggered.connect(self.save_session)
+        self.actionLoad_session.triggered.connect(self.manual_load_history_file)
 
         # Connect comboboxes to their respective functions
         self.inputHistoryCombo.activated.connect(self.set_chat_input_history)
@@ -549,7 +553,6 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
     # Define a helper function to get the directory path from a dialog
     def save_session(self):
         options = QFileDialog.Options()
-        # options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(
             None, "Save File", "", "JSON Files (*.json)", options=options
         )
@@ -637,7 +640,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     def history_display(self, first_launch=False):
         if first_launch:
-            self.load_history_file()
+            self.load_history_file(SESSION_FILE)
             if self.bot_name not in self.session_dict:
                 self.history_reset()
         self.chat_display()
@@ -647,15 +650,38 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             session_history = dict(self.session_dict)
             with open(file_name, "w", encoding="utf-8") as file:
                 json.dump(session_history, file)
+                # print("--- Wrote session file")
 
-    def load_history_file(self):
-        if Path(SESSION_FILE).exists():
+    def load_history_file(self, file_name):
+        if Path(file_name).exists():
             print("--- Loading session history file")
-            with open(SESSION_FILE, "r", encoding="utf-8") as file:
+            with open(file_name, "r", encoding="utf-8") as file:
                 session_history = json.load(file)
                 if self.bot_name in session_history:
                     self.session_dict = session_history
 
+    def manual_load_history_file(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(
+            None, "Session File", "", "JSON Files (*.json)", options=options
+        )
+
+        if file_name:
+            self.load_history_file(file_name)
+            if self.page_mode == "Chat":
+                self.chat_display()
+
+    def get_file_path(self, title, filter):
+        file_path = QFileDialog.getOpenFileName(self, title, "", filter)[0]
+        return file_path
+
+    # Browse for an image to load
+    def image_select(self):
+        image = self.get_file_path("Open file", "Image Files (*.png *.jpg *.jpeg *.webp)")
+        if image:
+            self.imgFileLine.setText(image)
+
+            
     def reset_history(self):
         self.session_dict[self.bot_name] = {
             "user_msgs": [],
@@ -697,8 +723,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         return (
             display_text
             # .replace("\n", "<br />")
-            .replace("<START>", "")
-            .replace("<END>", "")
+            .replace("<START>", "").replace("<END>", "")
         )
 
     def update_chat_text_edit(self, display_text):
@@ -916,6 +941,8 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             if self.seedSpin.value() == -1
             else self.seedSpin.value()
         )
+
+        # print("---" + prompt + "---")
 
         cpp_params = {
             "prompt": prompt,
