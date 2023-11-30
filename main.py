@@ -611,6 +611,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         if not clear:
             self.stopButton.setEnabled(enable_mode)
             self.generateButton.setEnabled(inverted_button_state)
+            self.notebookTextEdit.setReadOnly(enable_mode)
 
     def display_sys_prompt(self):
         display_text = (
@@ -790,7 +791,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         else:
             self.final_prompt_template = self.get_chat_presets()
 
-    def update_context(self):
+    def update_context(self): ## Fix custom sys prompt
         self.final_prompt_template["system_message"] = (
             self.customSysPromptText.toPlainText()
             if self.customSysPromptCheck.isChecked()
