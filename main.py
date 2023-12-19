@@ -492,7 +492,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     def manage_contacts(self, contact):
         # If a contact is provided, get related info and set window title
-        if contact.parent():
+        if contact.parent() and not self.text_gen_thread:
             self.bot_name = contact.text(0)
             self.contact_parent = contact.parent().text(0) if contact.parent() else None
             self.history_display(not bool(self.session_dict.get(contact.text(0))))
@@ -667,7 +667,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             None, "Session File", "", "JSON Files (*.json)", options=options
         )
 
-        if file_name:
+        if file_name and self.session_dict:
             self.load_history_file(file_name)
             if self.page_mode == "Chat":
                 self.chat_display()
