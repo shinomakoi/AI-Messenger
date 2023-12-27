@@ -397,7 +397,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         # Connect comboboxes to their respective functions
         self.inputHistoryCombo.activated.connect(self.set_chat_input_history)
         self.paramPresets_comboBox.activated.connect(self.apply_params_preset)
-        self.contactsTree.itemDoubleClicked.connect(self.manage_contacts)
+        self.contactsTree.itemClicked.connect(self.manage_contacts)
         self.textTabWidget.currentChanged.connect(self.manage_page_mode)
 
         # Connect sliders to their respective spin boxes and vice versa
@@ -815,9 +815,9 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         user_template, self.bot_prompt = self.final_prompt_template[
             "turn_template"
         ].split("<|bot-message|>")
-        user_prompt = user_template.replace(
-            "<|user|>", user_pfx
-        ).replace("<|bot|>", bot_pfx)
+        user_prompt = user_template.replace("<|user|>", user_pfx).replace(
+            "<|bot|>", bot_pfx
+        )
 
         updated_context = "".join(
             [
@@ -937,7 +937,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 f"\n{self.final_prompt_template['user_name_prefix'][:-1]}",
                 self.final_prompt_template["bot_name_prefix"],
                 "\n:",
-                "### Instruction:"
+                "### Instruction:",
             ]
             if self.stopStringAutoCheck.isChecked() and self.page_mode == "Chat"
             else []
