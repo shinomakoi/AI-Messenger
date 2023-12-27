@@ -55,37 +55,16 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QSplitter" name="splitter_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+          <widget class="QTextEdit" name="chatTextEdit">
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
-           <widget class="QTreeWidget" name="contactsTree">
-            <property name="maximumSize">
-             <size>
-              <width>256</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-            <column>
-             <property name="text">
-              <string>Contacts</string>
-             </property>
-            </column>
-           </widget>
-           <widget class="QTextEdit" name="chatTextEdit">
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-            <property name="acceptRichText">
-             <bool>false</bool>
-            </property>
-            <property name="placeholderText">
-             <string>Output text</string>
-            </property>
-           </widget>
+           <property name="acceptRichText">
+            <bool>false</bool>
+           </property>
+           <property name="placeholderText">
+            <string>Output text</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -111,20 +90,45 @@
       <widget class="QToolBox" name="rightToolbox">
        <property name="maximumSize">
         <size>
-         <width>256</width>
+         <width>292</width>
          <height>16777215</height>
         </size>
        </property>
        <property name="currentIndex">
         <number>0</number>
        </property>
+       <widget class="QWidget" name="page">
+        <attribute name="label">
+         <string>Chat presets</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0">
+          <widget class="QTreeWidget" name="contactsTree">
+           <property name="maximumSize">
+            <size>
+             <width>256</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <column>
+            <property name="text">
+             <string>Presets</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="paramsBasicPage">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>831</height>
+          <width>292</width>
+          <height>760</height>
          </rect>
         </property>
         <attribute name="label">
@@ -420,8 +424,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>831</height>
+          <width>292</width>
+          <height>760</height>
          </rect>
         </property>
         <attribute name="label">
@@ -786,8 +790,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>831</height>
+          <width>292</width>
+          <height>760</height>
          </rect>
         </property>
         <attribute name="label">
@@ -950,8 +954,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>831</height>
+          <width>292</width>
+          <height>760</height>
          </rect>
         </property>
         <attribute name="label">
@@ -968,69 +972,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="stopStringAutoCheck">
-           <property name="toolTip">
-            <string>Auto add stop strings</string>
-           </property>
-           <property name="text">
-            <string>Auto add stop strings</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>LLaVA image:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="0">
-          <spacer name="verticalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="8" column="0">
-          <widget class="QCheckBox" name="penaliseNlCheck">
-           <property name="toolTip">
-            <string>Penalise newline tokens when applying the repeat penalty </string>
-           </property>
-           <property name="text">
-            <string>Penalise newlines</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_16">
-           <property name="text">
-            <string>Custom stop strings:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QCheckBox" name="autoSaveSessionCheck">
-           <property name="toolTip">
-            <string>Auto save session to file after generation</string>
-           </property>
-           <property name="text">
-            <string>Auto save session</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
          <item row="7" column="0">
           <widget class="QLineEdit" name="imgFileLine">
            <property name="toolTip">
@@ -1044,25 +985,19 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="autoscrollCheck">
-           <property name="toolTip">
-            <string>Autoscroll the output text when generating</string>
-           </property>
-           <property name="text">
-            <string>Autoscroll</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
+         <item row="10" column="0">
           <widget class="QGroupBox" name="groupBox_2">
            <property name="title">
             <string>Theme</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
+            <item row="3" column="0">
+             <widget class="QRadioButton" name="themeLightRadio">
+              <property name="text">
+               <string>Light</string>
+              </property>
+             </widget>
+            </item>
             <item row="4" column="0">
              <widget class="QRadioButton" name="themeNativeRadio">
               <property name="text">
@@ -1080,20 +1015,102 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QRadioButton" name="themeLightRadio">
-              <property name="text">
-               <string>Light</string>
-              </property>
-             </widget>
-            </item>
            </layout>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Custom stop strings:</string>
+           </property>
           </widget>
          </item>
          <item row="7" column="1">
           <widget class="QToolButton" name="imgFileButton">
            <property name="text">
             <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="stopStringAutoCheck">
+           <property name="toolTip">
+            <string>Auto add stop strings</string>
+           </property>
+           <property name="text">
+            <string>Auto add stop strings</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="autoSaveSessionCheck">
+           <property name="toolTip">
+            <string>Auto save session to file after generation</string>
+           </property>
+           <property name="text">
+            <string>Auto save session</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QCheckBox" name="penaliseNlCheck">
+           <property name="toolTip">
+            <string>Penalise newline tokens when applying the repeat penalty </string>
+           </property>
+           <property name="text">
+            <string>Penalise newlines</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0">
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="autoscrollCheck">
+           <property name="toolTip">
+            <string>Autoscroll the output text when generating</string>
+           </property>
+           <property name="text">
+            <string>Autoscroll</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>LLaVA image:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QCheckBox" name="charInstructCheck">
+           <property name="text">
+            <string>Use instruct for characters</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1241,7 +1258,7 @@
      <x>0</x>
      <y>0</y>
      <width>1582</width>
-     <height>23</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

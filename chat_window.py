@@ -67,21 +67,12 @@ class Ui_ChatWindow(object):
         self.chatTab.setObjectName(u"chatTab")
         self.gridLayout = QGridLayout(self.chatTab)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.splitter_2 = QSplitter(self.chatTab)
-        self.splitter_2.setObjectName(u"splitter_2")
-        self.splitter_2.setOrientation(Qt.Horizontal)
-        self.contactsTree = QTreeWidget(self.splitter_2)
-        self.contactsTree.setObjectName(u"contactsTree")
-        self.contactsTree.setMaximumSize(QSize(256, 16777215))
-        self.contactsTree.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.splitter_2.addWidget(self.contactsTree)
-        self.chatTextEdit = QTextEdit(self.splitter_2)
+        self.chatTextEdit = QTextEdit(self.chatTab)
         self.chatTextEdit.setObjectName(u"chatTextEdit")
         self.chatTextEdit.setReadOnly(True)
         self.chatTextEdit.setAcceptRichText(False)
-        self.splitter_2.addWidget(self.chatTextEdit)
 
-        self.gridLayout.addWidget(self.splitter_2, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.chatTextEdit, 0, 0, 1, 1)
 
         self.textTabWidget.addTab(self.chatTab, "")
         self.notebookTab = QWidget()
@@ -98,10 +89,22 @@ class Ui_ChatWindow(object):
         self.splitter.addWidget(self.textTabWidget)
         self.rightToolbox = QToolBox(self.splitter)
         self.rightToolbox.setObjectName(u"rightToolbox")
-        self.rightToolbox.setMaximumSize(QSize(256, 16777215))
+        self.rightToolbox.setMaximumSize(QSize(292, 16777215))
+        self.page = QWidget()
+        self.page.setObjectName(u"page")
+        self.gridLayout_9 = QGridLayout(self.page)
+        self.gridLayout_9.setObjectName(u"gridLayout_9")
+        self.contactsTree = QTreeWidget(self.page)
+        self.contactsTree.setObjectName(u"contactsTree")
+        self.contactsTree.setMaximumSize(QSize(256, 16777215))
+        self.contactsTree.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+        self.gridLayout_9.addWidget(self.contactsTree, 0, 0, 1, 1)
+
+        self.rightToolbox.addItem(self.page, u"Chat presets")
         self.paramsBasicPage = QWidget()
         self.paramsBasicPage.setObjectName(u"paramsBasicPage")
-        self.paramsBasicPage.setGeometry(QRect(0, 0, 256, 831))
+        self.paramsBasicPage.setGeometry(QRect(0, 0, 292, 760))
         self.gridLayout_2 = QGridLayout(self.paramsBasicPage)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.label_5 = QLabel(self.paramsBasicPage)
@@ -254,7 +257,7 @@ class Ui_ChatWindow(object):
         self.rightToolbox.addItem(self.paramsBasicPage, u"Params - Shared")
         self.paramAdvPage = QWidget()
         self.paramAdvPage.setObjectName(u"paramAdvPage")
-        self.paramAdvPage.setGeometry(QRect(0, 0, 256, 831))
+        self.paramAdvPage.setGeometry(QRect(0, 0, 292, 760))
         self.gridLayout_4 = QGridLayout(self.paramAdvPage)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.tfszSlider = QSlider(self.paramAdvPage)
@@ -460,7 +463,7 @@ class Ui_ChatWindow(object):
         self.rightToolbox.addItem(self.paramAdvPage, u"Params - More")
         self.preferencesPage = QWidget()
         self.preferencesPage.setObjectName(u"preferencesPage")
-        self.preferencesPage.setGeometry(QRect(0, 0, 256, 831))
+        self.preferencesPage.setGeometry(QRect(0, 0, 292, 760))
         self.gridLayout_3 = QGridLayout(self.preferencesPage)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.customSysPromptCheck = QCheckBox(self.preferencesPage)
@@ -538,7 +541,7 @@ class Ui_ChatWindow(object):
         self.rightToolbox.addItem(self.preferencesPage, u"Preferences")
         self.themesPage = QWidget()
         self.themesPage.setObjectName(u"themesPage")
-        self.themesPage.setGeometry(QRect(0, 0, 256, 831))
+        self.themesPage.setGeometry(QRect(0, 0, 292, 760))
         self.gridLayout_7 = QGridLayout(self.themesPage)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.custStopStringLine = QLineEdit(self.themesPage)
@@ -546,52 +549,20 @@ class Ui_ChatWindow(object):
 
         self.gridLayout_7.addWidget(self.custStopStringLine, 5, 0, 1, 1)
 
-        self.stopStringAutoCheck = QCheckBox(self.themesPage)
-        self.stopStringAutoCheck.setObjectName(u"stopStringAutoCheck")
-        self.stopStringAutoCheck.setChecked(True)
-
-        self.gridLayout_7.addWidget(self.stopStringAutoCheck, 1, 0, 1, 1)
-
-        self.label_13 = QLabel(self.themesPage)
-        self.label_13.setObjectName(u"label_13")
-
-        self.gridLayout_7.addWidget(self.label_13, 6, 0, 1, 1)
-
-        self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout_7.addItem(self.verticalSpacer_5, 11, 0, 1, 1)
-
-        self.penaliseNlCheck = QCheckBox(self.themesPage)
-        self.penaliseNlCheck.setObjectName(u"penaliseNlCheck")
-
-        self.gridLayout_7.addWidget(self.penaliseNlCheck, 8, 0, 1, 1)
-
-        self.label_16 = QLabel(self.themesPage)
-        self.label_16.setObjectName(u"label_16")
-
-        self.gridLayout_7.addWidget(self.label_16, 4, 0, 1, 1)
-
-        self.autoSaveSessionCheck = QCheckBox(self.themesPage)
-        self.autoSaveSessionCheck.setObjectName(u"autoSaveSessionCheck")
-        self.autoSaveSessionCheck.setChecked(True)
-
-        self.gridLayout_7.addWidget(self.autoSaveSessionCheck, 2, 0, 1, 1)
-
         self.imgFileLine = QLineEdit(self.themesPage)
         self.imgFileLine.setObjectName(u"imgFileLine")
 
         self.gridLayout_7.addWidget(self.imgFileLine, 7, 0, 1, 1)
 
-        self.autoscrollCheck = QCheckBox(self.themesPage)
-        self.autoscrollCheck.setObjectName(u"autoscrollCheck")
-        self.autoscrollCheck.setChecked(True)
-
-        self.gridLayout_7.addWidget(self.autoscrollCheck, 0, 0, 1, 1)
-
         self.groupBox_2 = QGroupBox(self.themesPage)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.gridLayout_8 = QGridLayout(self.groupBox_2)
         self.gridLayout_8.setObjectName(u"gridLayout_8")
+        self.themeLightRadio = QRadioButton(self.groupBox_2)
+        self.themeLightRadio.setObjectName(u"themeLightRadio")
+
+        self.gridLayout_8.addWidget(self.themeLightRadio, 3, 0, 1, 1)
+
         self.themeNativeRadio = QRadioButton(self.groupBox_2)
         self.themeNativeRadio.setObjectName(u"themeNativeRadio")
 
@@ -603,18 +574,57 @@ class Ui_ChatWindow(object):
 
         self.gridLayout_8.addWidget(self.themeDarkRadio, 2, 0, 1, 1)
 
-        self.themeLightRadio = QRadioButton(self.groupBox_2)
-        self.themeLightRadio.setObjectName(u"themeLightRadio")
 
-        self.gridLayout_8.addWidget(self.themeLightRadio, 3, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.groupBox_2, 10, 0, 1, 1)
 
+        self.label_16 = QLabel(self.themesPage)
+        self.label_16.setObjectName(u"label_16")
 
-        self.gridLayout_7.addWidget(self.groupBox_2, 9, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.label_16, 4, 0, 1, 1)
 
         self.imgFileButton = QToolButton(self.themesPage)
         self.imgFileButton.setObjectName(u"imgFileButton")
 
         self.gridLayout_7.addWidget(self.imgFileButton, 7, 1, 1, 1)
+
+        self.stopStringAutoCheck = QCheckBox(self.themesPage)
+        self.stopStringAutoCheck.setObjectName(u"stopStringAutoCheck")
+        self.stopStringAutoCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.stopStringAutoCheck, 1, 0, 1, 1)
+
+        self.autoSaveSessionCheck = QCheckBox(self.themesPage)
+        self.autoSaveSessionCheck.setObjectName(u"autoSaveSessionCheck")
+        self.autoSaveSessionCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.autoSaveSessionCheck, 2, 0, 1, 1)
+
+        self.penaliseNlCheck = QCheckBox(self.themesPage)
+        self.penaliseNlCheck.setObjectName(u"penaliseNlCheck")
+        self.penaliseNlCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.penaliseNlCheck, 8, 0, 1, 1)
+
+        self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.gridLayout_7.addItem(self.verticalSpacer_5, 12, 0, 1, 1)
+
+        self.autoscrollCheck = QCheckBox(self.themesPage)
+        self.autoscrollCheck.setObjectName(u"autoscrollCheck")
+        self.autoscrollCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.autoscrollCheck, 0, 0, 1, 1)
+
+        self.label_13 = QLabel(self.themesPage)
+        self.label_13.setObjectName(u"label_13")
+
+        self.gridLayout_7.addWidget(self.label_13, 6, 0, 1, 1)
+
+        self.charInstructCheck = QCheckBox(self.themesPage)
+        self.charInstructCheck.setObjectName(u"charInstructCheck")
+        self.charInstructCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.charInstructCheck, 9, 0, 1, 1)
 
         self.rightToolbox.addItem(self.themesPage, u"Preferences - More")
         self.splitter.addWidget(self.rightToolbox)
@@ -669,7 +679,7 @@ class Ui_ChatWindow(object):
         ChatWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(ChatWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1582, 23))
+        self.menubar.setGeometry(QRect(0, 0, 1582, 27))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -726,12 +736,13 @@ class Ui_ChatWindow(object):
         self.retryButton.setToolTip(QCoreApplication.translate("ChatWindow", u"Retry", None))
 #endif // QT_CONFIG(tooltip)
         self.retryButton.setText(QCoreApplication.translate("ChatWindow", u"Ret", None))
-        ___qtreewidgetitem = self.contactsTree.headerItem()
-        ___qtreewidgetitem.setText(0, QCoreApplication.translate("ChatWindow", u"Contacts", None));
         self.chatTextEdit.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"Output text", None))
         self.textTabWidget.setTabText(self.textTabWidget.indexOf(self.chatTab), QCoreApplication.translate("ChatWindow", u"Chat", None))
         self.notebookTextEdit.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"Output text", None))
         self.textTabWidget.setTabText(self.textTabWidget.indexOf(self.notebookTab), QCoreApplication.translate("ChatWindow", u"Notebook", None))
+        ___qtreewidgetitem = self.contactsTree.headerItem()
+        ___qtreewidgetitem.setText(0, QCoreApplication.translate("ChatWindow", u"Presets", None));
+        self.rightToolbox.setItemText(self.rightToolbox.indexOf(self.page), QCoreApplication.translate("ChatWindow", u"Chat presets", None))
         self.label_5.setText(QCoreApplication.translate("ChatWindow", u"Top K:", None))
         self.label_8.setText(QCoreApplication.translate("ChatWindow", u"Typical P:", None))
         self.label_11.setText(QCoreApplication.translate("ChatWindow", u"Max new tokens:", None))
@@ -881,33 +892,34 @@ class Ui_ChatWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.custStopStringLine.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"User, Bot", None))
 #if QT_CONFIG(tooltip)
+        self.imgFileLine.setToolTip(QCoreApplication.translate("ChatWindow", u"Image for LLaVA (llama.cpp only)", None))
+#endif // QT_CONFIG(tooltip)
+        self.imgFileLine.setText("")
+        self.imgFileLine.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"Path to image for LLaVA usage", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("ChatWindow", u"Theme", None))
+        self.themeLightRadio.setText(QCoreApplication.translate("ChatWindow", u"Light", None))
+        self.themeNativeRadio.setText(QCoreApplication.translate("ChatWindow", u"Native", None))
+        self.themeDarkRadio.setText(QCoreApplication.translate("ChatWindow", u"Dark", None))
+        self.label_16.setText(QCoreApplication.translate("ChatWindow", u"Custom stop strings:", None))
+        self.imgFileButton.setText(QCoreApplication.translate("ChatWindow", u"...", None))
+#if QT_CONFIG(tooltip)
         self.stopStringAutoCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Auto add stop strings", None))
 #endif // QT_CONFIG(tooltip)
         self.stopStringAutoCheck.setText(QCoreApplication.translate("ChatWindow", u"Auto add stop strings", None))
-        self.label_13.setText(QCoreApplication.translate("ChatWindow", u"LLaVA image:", None))
-#if QT_CONFIG(tooltip)
-        self.penaliseNlCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Penalise newline tokens when applying the repeat penalty ", None))
-#endif // QT_CONFIG(tooltip)
-        self.penaliseNlCheck.setText(QCoreApplication.translate("ChatWindow", u"Penalise newlines", None))
-        self.label_16.setText(QCoreApplication.translate("ChatWindow", u"Custom stop strings:", None))
 #if QT_CONFIG(tooltip)
         self.autoSaveSessionCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Auto save session to file after generation", None))
 #endif // QT_CONFIG(tooltip)
         self.autoSaveSessionCheck.setText(QCoreApplication.translate("ChatWindow", u"Auto save session", None))
 #if QT_CONFIG(tooltip)
-        self.imgFileLine.setToolTip(QCoreApplication.translate("ChatWindow", u"Image for LLaVA (llama.cpp only)", None))
+        self.penaliseNlCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Penalise newline tokens when applying the repeat penalty ", None))
 #endif // QT_CONFIG(tooltip)
-        self.imgFileLine.setText("")
-        self.imgFileLine.setPlaceholderText(QCoreApplication.translate("ChatWindow", u"Path to image for LLaVA usage", None))
+        self.penaliseNlCheck.setText(QCoreApplication.translate("ChatWindow", u"Penalise newlines", None))
 #if QT_CONFIG(tooltip)
         self.autoscrollCheck.setToolTip(QCoreApplication.translate("ChatWindow", u"Autoscroll the output text when generating", None))
 #endif // QT_CONFIG(tooltip)
         self.autoscrollCheck.setText(QCoreApplication.translate("ChatWindow", u"Autoscroll", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("ChatWindow", u"Theme", None))
-        self.themeNativeRadio.setText(QCoreApplication.translate("ChatWindow", u"Native", None))
-        self.themeDarkRadio.setText(QCoreApplication.translate("ChatWindow", u"Dark", None))
-        self.themeLightRadio.setText(QCoreApplication.translate("ChatWindow", u"Light", None))
-        self.imgFileButton.setText(QCoreApplication.translate("ChatWindow", u"...", None))
+        self.label_13.setText(QCoreApplication.translate("ChatWindow", u"LLaVA image:", None))
+        self.charInstructCheck.setText(QCoreApplication.translate("ChatWindow", u"Use instruct for characters", None))
         self.rightToolbox.setItemText(self.rightToolbox.indexOf(self.themesPage), QCoreApplication.translate("ChatWindow", u"Preferences - More", None))
 #if QT_CONFIG(tooltip)
         self.clearButton.setToolTip(QCoreApplication.translate("ChatWindow", u"Clear the output history", None))

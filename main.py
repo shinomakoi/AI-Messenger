@@ -81,7 +81,7 @@ class CharacterWindow(QWidget, Ui_CharacterForm):
     def write_to_file(self, char_dict):
         file_name = f"{CHARACTER_PRESETS_DIR}/{self.charName.text()}.json"
         with open(file_name, "w", encoding="utf-8") as file:
-            json.dump(char_dict, file)
+            json.dump(char_dict, file, indent=4)
 
 
 class InputTextEdit(QPlainTextEdit):
@@ -136,7 +136,7 @@ class SettingsManager:
         }
         try:
             with open(SETTINGS_FILE, "w", encoding="utf-8") as file:
-                json.dump(settings, file)
+                json.dump(settings, file, indent=4)
             print("--- Saved settings")
         except FileNotFoundError as error:
             print(f"--- Could not save settings:\n{error}")
@@ -229,7 +229,7 @@ class CharacterCard:
             f"Tags: {', '.join(result['tags']) if 'tags' in result else ''}\n\n"
             f"{result['mes_example'] if result['mes_example'].strip() else ''}\n\n"
             f"{result['first_mes']}\n\n"
-        )
+        ).replace("<START>", "")
 
         def replace_placeholders(message):
             message = (
@@ -650,7 +650,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         if self.autoSaveSessionCheck.isChecked() or manual:
             session_history = dict(self.session_dict)
             with open(file_name, "w", encoding="utf-8") as file:
-                json.dump(session_history, file)
+                json.dump(session_history, file, indent=4)
                 # print("--- Wrote session file")
 
     def load_history_file(self, file_name):
@@ -678,11 +678,12 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
 
     # Browse for an image to load
     def image_select(self):
-        image = self.get_file_path("Open file", "Image Files (*.png *.jpg *.jpeg *.webp)")
+        image = self.get_file_path(
+            "Open file", "Image Files (*.png *.jpg *.jpeg *.webp)"
+        )
         if image:
             self.imgFileLine.setText(image)
 
-            
     def reset_history(self):
         self.session_dict[self.bot_name] = {
             "user_msgs": [],
@@ -791,7 +792,18 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         else:
             self.final_prompt_template = self.get_chat_presets()
 
-    def update_context(self): ## Fix custom sys prompt
+    def update_context(self):  ## Fix custom sys prompt
+        if self.charInstructCheck.isChecked() and self.contact_parent != "Assistants":
+            user_pfx = (
+                f"### Instruction:\n{self.final_prompt_template['user_name_prefix']}"
+            )
+            bot_pfx = f"### Response:\n{self.final_prompt_template['bot_name_prefix']}"
+        else:
+            user_pfx, bot_pfx = (
+                self.final_prompt_template["user_name_prefix"],
+                self.final_prompt_template["bot_name_prefix"],
+            )
+
         self.final_prompt_template["system_message"] = (
             self.customSysPromptText.toPlainText()
             if self.customSysPromptCheck.isChecked()
@@ -804,13 +816,13 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
             "turn_template"
         ].split("<|bot-message|>")
         user_prompt = user_template.replace(
-            "<|user|>", self.final_prompt_template["user_name_prefix"]
-        ).replace("<|bot|>", self.final_prompt_template["bot_name_prefix"])
+            "<|user|>", user_pfx
+        ).replace("<|bot|>", bot_pfx)
 
         updated_context = "".join(
             [
                 (user_prompt.replace("<|user-message|>", user_msg))
-                + str(bot_msg)
+                + bot_msg
                 + self.bot_prompt
                 for user_msg, bot_msg in zip(
                     self.session_dict[self.bot_name]["user_msgs"],
@@ -826,7 +838,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
         if self.contact_parent == "Characters":
             self.final_prompt_template[
                 "user_name_prefix"
-            ] = f"{self.usernameLine.text()}:"
+            ] = f"{self.usernameLine.text()}"
 
     def rewind_history(self):
         if not self.page_mode == "Chat":
@@ -925,8 +937,7 @@ class ChatWindow(QMainWindow, Ui_ChatWindow):
                 f"\n{self.final_prompt_template['user_name_prefix'][:-1]}",
                 self.final_prompt_template["bot_name_prefix"],
                 "\n:",
-                # "<START>",
-                "<END>",
+                "### Instruction:"
             ]
             if self.stopStringAutoCheck.isChecked() and self.page_mode == "Chat"
             else []
